@@ -1,11 +1,74 @@
 ---
 layout: page
 permalink: /teaching/
-title: teaching
-description: Materials for courses you taught. Replace this text with your description.
+title: Teaching
+description: Courses' List
 nav: true
 ---
 
-For now, this page is assumed to be a static description of your courses. You can convert it to a collection similar to `_projects/` so that you can have a dedicated page for each course.
+{% assign coursesByYear = site.courses | group_by: "year" %}
 
-Organize your courses by years, topics, or universities, however you like!
+{% for year in coursesByYear reversed %}
+
+<h1>
+    <span onclick="hideShow({{year.name}})">
+        <div class="teaching-year">
+            {{ year.name }}/{{ year.name | plus: 1 }}
+        </div>
+    </span>
+</h1>
+
+{% assign postYear = year.name | plus: 0 %}
+{% assign postYear1 = year.name | plus: 1 %}
+{% assign nowYear = site.time | date: "%Y" | plus: 0 %}
+{% assign nowMonth = site.time | date: "%m" | plus: 0 %}
+
+{% if nowYear == postYear and nowMonth > 8 or nowYear==postYear1 and nowMonth<=8 %}
+
+<ul id={{ year.name  }}>
+
+{% else %}
+
+<ul id={{ year.name  }} style="display:none">
+
+{% endif %}
+
+{% for course in year.items %}
+
+<li>
+
+<h3>
+    <a class="teaching-title" href="{{ course.slug }}">
+        {{ course.title }}
+    </a>
+    &nbsp;
+    <a href="{{ course.slug  }}.xml" class="teaching-rss-icon">
+        <i class="fas fa-rss"></i>
+    </a>
+</h3>
+
+{% if course.description %}
+
+<p>{{ course.description }}</p>
+
+{% endif %}
+
+</li>
+
+{% endfor %}
+
+</ul>
+
+{% endfor %}
+
+<script>
+function hideShow(year) {
+  var x = document.getElementById(year);
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+</script>
+

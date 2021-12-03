@@ -1,0 +1,32 @@
+---
+layout: default
+---
+    {%- if page.title -%}
+        <h1 class="page-heading">{{ page.title }}</h1>
+    {%- endif -%}
+    {%- if page.ano_letivo -%}
+        <h3>{{ page.ano_letivo }}</h1>
+    {%- endif -%}
+
+  {{ content | markdownify }}
+
+  <br>
+    {%- if paginator.posts.size > 0 -%}
+        {%- if page.en -%}
+          <h2 class="post-list-heading">Announcements</h2>
+        {% else %}
+          <h2 class="post-list-heading">Anúncios</h2>
+        {%- endif -%}
+        <ul class="post-list">
+        {% for post in paginator.posts %}
+          <li>
+            <h3><a class="post-title" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a></h3>
+            <p class="post-meta">{{ post.date | date: '%B %-d, %Y' }}</p>
+            <p>{{ post.description }}</p>
+          </li>
+        {% endfor %}
+        </ul>
+    {%- endif -%}
+
+
+  {% include pagination.html %}

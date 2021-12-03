@@ -22,6 +22,17 @@
     padding-top: 12px;
     display : block;
   }
+
+}
+
+html[data-theme='light'] {
+    .o {
+      color: rgb(35,40,45) !important;
+    }
+
+    .s {
+      color: rgb(35,40,45) !important;
+    }
 }
 
 html[data-theme='dark'] {
@@ -44,4 +55,6 @@ html[data-theme='dark'] {
   .fa-moon {
     display : none;
   }
+
+
 }

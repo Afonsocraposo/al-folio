@@ -1,7 +1,7 @@
 ---
 layout: post
-date: 2016-01-15 07:59:00-0400
+date: 2021-09-26
 inline: true
 ---
 
-A simple inline announcement with Markdown emoji! :sparkles: :smile:
+This semester, 2021/2022, I'll be [teaching](https://afonsoraposo.com/teaching) the lab classes of the "Fundamentos de Bioinstrumentação" course at Instituto Superior Técnico.
