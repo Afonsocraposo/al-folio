@@ -23,5 +23,5 @@ I'm a Biomedical Engineering from Lisbon. I'm currently doing my PhD thesis on "
 
 I enjoy learning about new things and understanding how everything works. I also like sharing what I learn and create with others, so expect to find more about everything here.
 
-Btw, I use <s>Arch</s> PopOS!
+Btw, I use <s>Arch</s> Fedora!
 
