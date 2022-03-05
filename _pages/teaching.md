@@ -23,7 +23,19 @@ nav: true
 {% assign nowYear = site.time | date: "%Y" | plus: 0 %}
 {% assign nowMonth = site.time | date: "%m" | plus: 0 %}
 
-{% if nowYear == postYear and nowMonth > 8 or nowYear==postYear1 and nowMonth<=8 %}
+{% if nowYear == postYear and nowMonth > 8 %}
+{% assign semester1 = true %}
+{% else %}
+{% assign semester1 = false %}
+{% endif %}
+
+{% if nowYear==postYear1 and nowMonth<=8 %}
+{% assign semester2 = true %}
+{% else %}
+{% assign semester2 = false %}
+{% endif %}
+
+{% if semester1 or semester2 %}
 
 <ul id={{ year.name  }}>
 
