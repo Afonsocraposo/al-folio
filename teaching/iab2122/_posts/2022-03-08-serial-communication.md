@@ -18,4 +18,8 @@ Every time that command is executed, the data is sent in a frame like so:
 
 ![Serial communication frame](https://cdn.sparkfun.com/r/700-700/assets/f/9/c/0/2/50d2066fce395fc43b000000.png)
 
+In the Arduino `Serial.begin()` [documentation](https://www.arduino.cc/reference/en/language/functions/communication/serial/begin/), you can find:
+
+> An optional second argument configures the data, parity, and stop bits. The default is 8 data bits, no parity, one stop bit.
+
 I advise you to read more about it at [Serial Communication - Sparkfun](https://learn.sparkfun.com/tutorials/serial-communication).
