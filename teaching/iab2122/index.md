@@ -5,7 +5,7 @@ ano_letivo: 2021/2022
 en: true
 pagination:
   enabled: true
-  category: iab_21_22
+  category: iab2122
 ---
 
 Shift IABL03
