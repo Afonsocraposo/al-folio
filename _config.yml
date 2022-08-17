@@ -1,4 +1,3 @@
-
 # Site settings
 # -----------------------------------------------------------------------------
 
@@ -13,11 +12,11 @@ footer_text: >
   Powered by <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
   Hosted by <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>.
 
-icon: 👨🏻‍💻  # the emoji used as the favicon
-url: https://afonsoraposo.com  # the base hostname & protocol for your site
+icon: 👨🏻‍💻 # the emoji used as the favicon
+url: https://afonsoraposo.com # the base hostname & protocol for your site
 baseurl: #/al-folio # the subpath of your site, e.g. /blog/
 last_updated: true # set to true if you want to display last updated in the footer
-impressum_path:  # set to path to include impressum link in the footer, use the same path as permalink in a page, helps to conform with EU GDPR
+impressum_path: # set to path to include impressum link in the footer, use the same path as permalink in a page, helps to conform with EU GDPR
 
 # -----------------------------------------------------------------------------
 # Layout
@@ -43,12 +42,12 @@ og_image: https://github.com/Afonsocraposo/afonsocraposo.github.io/raw/master/as
 # -----------------------------------------------------------------------------
 
 github_username: afonsocraposo # your GitHub user name
-#gitlab_username: afonsocraposo # your GitLab user name
-twitter_username: afonso_raposo # your Twitter handle
+gitlab_username: afonsocraposo # your GitLab user name
+#twitter_username: afonso_raposo # your Twitter handle
 linkedin_username: afonso-raposo # your LinkedIn user name
 scholar_userid: szKTVNEAAAAJ # your Google Scholar ID
 orcid_id: 0000-0002-0161-5248 # your ORCID ID
-#medium_username: afonso_raposo # your Medium username
+medium_username: afonso_raposo # your Medium username
 quora_username: # your Quora username
 publons_id: # your ID on Publons
 research_gate_profile: Afonso-Raposo # your profile on ResearchGate
@@ -66,7 +65,7 @@ google_analytics: UA-273485432 # out your google-analytics code
 # Blog
 # -----------------------------------------------------------------------------
 
-blog_name: Blog  # your blog must have a name for it to show up in the nav bar
+blog_name: Blog # your blog must have a name for it to show up in the nav bar
 blog_description: My adventures log book
 permalink: /:categories/:year/:title
 
@@ -108,11 +107,11 @@ news_limit: 5
 # Markdown and syntax highlight
 markdown: kramdown
 highlighter: rouge
-highlight_theme: github  # https://github.com/jwarby/jekyll-pygments-themes
+highlight_theme: github # https://github.com/jwarby/jekyll-pygments-themes
 kramdown:
   input: GFM
   syntax_highlighter_opts:
-    css_class: 'highlight'
+    css_class: "highlight"
     span:
       line_numbers: false
     block:
@@ -120,7 +119,7 @@ kramdown:
       start_line: 1
 
 # Includes & excludes
-include: ['_pages']
+include: ["_pages"]
 exclude:
   - bin
   - Gemfile
@@ -149,7 +148,6 @@ github: [metadata]
 # -----------------------------------------------------------------------------
 
 scholar:
-
   last_name: Raposo
   first_name: [Afonso, A.]
 
@@ -173,17 +171,20 @@ scholar:
 # Optional Features
 # -----------------------------------------------------------------------------
 
-enable_google_analytics:    false  # enables google analytics
-enable_panelbear_analytics: false  # enables panelbear analytics
-enable_mansory:             true   # enables automatic project cards arangement
-enable_math:                true   # enables math typesetting (uses MathJax)
-enable_tooltips:            false  # enables automatic tooltip links generated
-                                   # for each section titles on pages and posts
-enable_darkmode:            true   # enables switching between light/dark modes
-enable_navbar_social:       false  # enables displaying social links in the
-                                   # navbar on the about page
-enable_project_categories:  true   # enables categorization of projects into
-                                   # multiple categories
+enable_google_analytics: false # enables google analytics
+enable_panelbear_analytics: false # enables panelbear analytics
+enable_mansory: true # enables automatic project cards arangement
+enable_math: true # enables math typesetting (uses MathJax)
+enable_tooltips:
+  false # enables automatic tooltip links generated
+  # for each section titles on pages and posts
+enable_darkmode: true # enables switching between light/dark modes
+enable_navbar_social:
+  false # enables displaying social links in the
+  # navbar on the about page
+enable_project_categories:
+  true # enables categorization of projects into
+  # multiple categories
 
 # -----------------------------------------------------------------------------
 # Library versions

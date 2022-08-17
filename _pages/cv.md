@@ -1,8 +1,8 @@
 ---
-layout: page
-permalink: /cv/
-title: CV
+layout: cv
+permalink: /assets/pdf/CV_Afonso_Raposo.pdf
+title: cv
 nav: true
-redirect: https://pub.dev/packages/bitalino
+nav_order: 4
+cv_pdf: CV_Afonso_Raposo.pdf
 ---
-
