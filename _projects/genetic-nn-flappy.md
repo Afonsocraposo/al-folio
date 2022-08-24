@@ -1,10 +1,9 @@
 ---
 layout: page
 title: Genetic Neural Network Flappy Bird
-description: Genetic algorithm coupled with neural networks to play Flappy Bird.
+description: Genetic algorithm coupled with neural networks to play Flappy Bird
 img: assets/img/projects/genetic-nn-flappy/thumbnail.png
-importance: 2
-category: fun
+category: python
 ---
 
 <center>

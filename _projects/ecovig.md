@@ -1,10 +1,9 @@
 ---
 layout: page
 title: e-CoVig
-description: Automated COVID-19 symptomatology remote monitoring system.
+description: Automated COVID-19 symptomatology remote monitoring mobile application
 img: /assets/img/projects/ecovig/logo.png
-importance: 1
-category: work
+category: mobile
 ---
 
 <center>
@@ -16,6 +15,12 @@ category: work
 e-CoVig aims to implement a low-cost solution for monitoring a large number of subjects in COVID-19 quarantine.
 
 The system couples a cloud-based eHealth platform for collection, management and visualization of physiological and clinical data, with a smartphone-based ubiquitous system for acquiring COVID-19 symptomatic measurements (pulse oximetry, temperature, heart rate and respiration).
+
+The app is available in the [Google Play Store](https://play.google.com/store/apps/details?id=com.ecovig.app).
+
+Learn more about it [here](https://brainanswer.pt/#projects/ecovig).
+
+### Screenshots
 
 <div class="row">
     <div class="col-sm mt-3 mt-md-0">
@@ -31,5 +36,3 @@ The system couples a cloud-based eHealth platform for collection, management and
 <div class="caption">
     Multiple screenshots of the application.
 </div>
-
-Learn more about it [here](https://brainanswer.pt/#projects/ecovig).

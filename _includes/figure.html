@@ -1,7 +1,7 @@
 {%- assign img_path = include.path | remove: ".jpg" | remove: ".jpeg" | remove:
 ".png" | remove: ".tiff" -%}
 
-<figure style="text-align:center">
+<figure style="text-align: center">
   <picture>
     {% if site.imagemagick.enabled %} {% for i in site.imagemagick.widths -%}
     <source

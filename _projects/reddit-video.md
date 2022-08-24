@@ -1,10 +1,9 @@
 ---
 layout: page
 title: Reddit Video
-description: Implementation of a Python program that generates videos from Reddit portuguese threads, using Text-To-Speech and FFMPEG.
+description: Implementation of a Python program that generates videos from Reddit portuguese threads, using Text-To-Speech and FFMPEG
 img: /assets/img/projects/reddit-video/reddit-video.jpg
-importance: 2
-category: fun
+category: python
 ---
 
 <center>
