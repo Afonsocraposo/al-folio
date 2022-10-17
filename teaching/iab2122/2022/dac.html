@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-<title>Afonso Raposo | Afonso Raposo</title>
+<title>Afonso Raposo | Digital to Analog Conversion</title>
 <meta name="description" content="Personal website.
 ">
 
@@ -16,8 +16,8 @@
 " />
 <meta property="og:type" content="object" />
 <meta property="og:title" content="" />
-<meta property="og:url" content="https://afonsoraposo.com/blog/index.html" />
-<meta property="og:description" content="Afonso Raposo" />
+<meta property="og:url" content="https://afonsoraposo.com/teaching/iab2122/2022/dac" />
+<meta property="og:description" content="Digital to Analog Conversion" />
 <meta property="og:image" content="https://github.com/Afonsocraposo/afonsocraposo.github.io/raw/master/assets/img/coding.jpg" />
 
 
@@ -39,7 +39,7 @@
 
 <link rel="stylesheet" href="/assets/css/main.css">
 
-<link rel="canonical" href="/blog/">
+<link rel="canonical" href="/teaching/iab2122/2022/dac">
 
 <!-- JQuery -->
 <!-- jQuery -->
@@ -104,7 +104,7 @@
           </li>
           
           <!-- Blog -->
-          <li class="nav-item active">
+          <li class="nav-item ">
             <a class="nav-link" href="/blog/">
               Blog
               
@@ -112,8 +112,6 @@
           </li>
           
           <!-- Other pages -->
-          
-          
           
           
           
@@ -181,44 +179,85 @@
     <!-- Content -->
 
     <div class="container mt-5">
-      <div class="post">
+      
 
-  <div class="header-bar">
-    <h1>Blog</h1>
-    <h2>My adventures log book</h2>
-  </div>
+<div class="post">
 
+  <header class="post-header">
+    <h1 class="post-title">Digital to Analog Conversion</h1>
+    <p class="post-meta">March 22, 2022</p>
+  </header>
 
-  <ul class="post-list">
+  <article class="post-content">
+    <p>So this week you’ll be exploring digital to analog conversion, outputing an analog signal with your Arduino.</p>
+
+<p>The guide for this lab is <a href="https://fenix.tecnico.ulisboa.pt/downloadFile/563568428849708/L3.%20Digital-to-Analog%20Conversion%20%28DAC%29%20-%20Jupyter%20Notebook.pdf">here</a>.</p>
+
+<p>In this lab you’ll have to do two things at the same time - control a square wave and measure the analog input - without blocking the main loop. How to do that?</p>
+
+<p>First, to generate a square wave, you can use the <code class="language-plaintext highlighter-rouge">digitalWrite</code> function. Timing the turn <code class="language-plaintext highlighter-rouge">HIGH</code>/<code class="language-plaintext highlighter-rouge">LOW</code>, you can generate a square wave. Read more about this function <a href="https://www.arduino.cc/reference/en/language/functions/digital-io/digitalwrite/">here</a>.</p>
+
+<p>You can use the function <code class="language-plaintext highlighter-rouge">millis()</code> to keep track of time. Once a previously defined ammount of time has passed, you do something. Check the following example:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">previous_time</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">dt</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+<span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">current_time</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="n">setup</span> <span class="p">{</span>
+    <span class="c1">// setup your code</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">loop</span> <span class="p">{</span>
+    <span class="n">current_time</span> <span class="o">=</span> <span class="n">millis</span><span class="p">();</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">current_time</span> <span class="o">-</span> <span class="n">previous_time</span> <span class="o">&gt;</span> <span class="n">dt</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// do something here</span>
+        <span class="n">previous_time</span> <span class="o">=</span> <span class="n">current_time</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>As you can see in the example above, this will <code class="language-plaintext highlighter-rouge">do something</code> every <code class="language-plaintext highlighter-rouge">dt</code> milliseconds without blocking the <code class="language-plaintext highlighter-rouge">loop</code>.</p>
+
+<p>To do two things at the same time, with different intervals, without blocking the <code class="language-plaintext highlighter-rouge">loop</code>, you can use something similar to the following code:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">pt1</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">pt2</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">dt1</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">dt2</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+
+<span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">ct</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="n">setup</span> <span class="p">{</span>
+    <span class="c1">// setup your code</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">loop</span> <span class="p">{</span>
+    <span class="n">ct</span> <span class="o">=</span> <span class="n">millis</span><span class="p">();</span>
     
-      <li>
-        <h3><a class="post-title" href="/blog/2020/encripta%C3%A7%C3%A3o">[PT] Encriptação no TEDxULisboa</a></h3>
-        <p class="post-meta">August 31, 2020</p>
-        <p>Descrição da implementação de encriptação ponto-a-ponto no TEDxULisboa</p>
-      </li>
-    
-      <li>
-        <h3><a class="post-title" href="/blog/2020/mk808">Running Debian Linux on MK808 Android Mini TV</a></h3>
-        <p class="post-meta">May 16, 2020</p>
-        <p>Here's my journey of installing Debian 8 (Jessie) with XFCE on the MK808 Android Mini TV</p>
-      </li>
-    
-      <li>
-        <h3><a class="post-title" href="/blog/2020/ppg">Measuring Your Heart Rate Using Your Phone’s Camera and Flutter</a></h3>
-        <p class="post-meta">April 8, 2020</p>
-        <p>Build a mobile heart-rate monitor that works without the need to wear any devices</p>
-      </li>
-    
-      <li>
-        <h3><a class="post-title" href="/blog/2019/sharedPref">Flutter: How to Save Objects in SharedPreferences</a></h3>
-        <p class="post-meta">September 7, 2019</p>
-        <p>An easy solution for small amounts of data</p>
-      </li>
-    
-  </ul>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ct</span> <span class="o">-</span> <span class="n">pt1</span> <span class="o">&gt;</span> <span class="n">dt1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// do something here</span>
+        <span class="n">pt1</span> <span class="o">=</span> <span class="n">ct</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">ct</span> <span class="o">-</span> <span class="n">pt2</span> <span class="o">&gt;</span> <span class="n">dt2</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// do something else here</span>
+        <span class="n">pt2</span> <span class="o">=</span> <span class="n">ct</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Another thing that you have to do is generating a square wave with half the amplitude, Vcc/2. You can easily accomplish that using a voltage divider:</p>
+
+<p align="center">
+<img alt="voltage divider" style="background-color:white" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Impedance_voltage_divider.svg/374px-Impedance_voltage_divider.svg.png" />
+</p>
+
+<p>Where <code class="language-plaintext highlighter-rouge">Vin</code> is connected to the digital output pin and <code class="language-plaintext highlighter-rouge">Vout</code> to the analog input pin.</p>
+
+  </article>
 
   
-
 
 </div>
 

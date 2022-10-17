@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+<channel>
+    <title>Instrumentação e Aquisição de Biossinais - 2021/2022</title>
+    <author>Afonso Raposo</author><link>https://afonsoraposo.com/teaching/iab2122/</link>
+ <lastBuildDate>Mon, 17 Oct 2022 15:31:38 +0000</lastBuildDate>
+ <pubDate>Mon, 17 Oct 2022 15:31:38 +0000</pubDate>
+ <ttl>1800</ttl>
+
+ 
+ <item>
+  <title>Digital to Analog Conversion</title>
+  <description>Some tips for the lab</description>
+  <link>/teaching/iab2122/2022/dac</link>
+  <guid isPermaLink="true">https://afonsoraposo.com/teaching/iab2122/2022/dac</guid>
+  <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
+ </item>
+ 
+ <item>
+  <title>Analog to Digital Conversion</title>
+  <description>Take this into account</description>
+  <link>/teaching/iab2122/2022/adc</link>
+  <guid isPermaLink="true">https://afonsoraposo.com/teaching/iab2122/2022/adc</guid>
+  <pubDate>Fri, 18 Mar 2022 00:00:00 +0000</pubDate>
+ </item>
+ 
+ <item>
+  <title>How to work at home?</title>
+  <description>I'll give you some tips on how to work at home</description>
+  <link>/teaching/iab2122/2022/at-home</link>
+  <guid isPermaLink="true">https://afonsoraposo.com/teaching/iab2122/2022/at-home</guid>
+  <pubDate>Thu, 10 Mar 2022 00:00:00 +0000</pubDate>
+ </item>
+ 
+ <item>
+  <title>Serial communication</title>
+  <description>How does serial communication work?</description>
+  <link>/teaching/iab2122/2022/serial-communication</link>
+  <guid isPermaLink="true">https://afonsoraposo.com/teaching/iab2122/2022/serial-communication</guid>
+  <pubDate>Tue, 08 Mar 2022 00:00:00 +0000</pubDate>
+ </item>
+ 
+ <item>
+  <title>Extra lab shift</title>
+  <description>There will be a laboratory session this Tuesday</description>
+  <link>/teaching/iab2122/2022/lab-tuesday</link>
+  <guid isPermaLink="true">https://afonsoraposo.com/teaching/iab2122/2022/lab-tuesday</guid>
+  <pubDate>Mon, 07 Mar 2022 00:00:00 +0000</pubDate>
+ </item>
+ 
+ <item>
+  <title>Welcome!</title>
+  <description>A simple welcome note</description>
+  <link>/teaching/iab2122/2022/hello</link>
+  <guid isPermaLink="true">https://afonsoraposo.com/teaching/iab2122/2022/hello</guid>
+  <pubDate>Sat, 05 Mar 2022 00:00:00 +0000</pubDate>
+ </item>
+ 
+
+</channel>
+</rss>
+
+

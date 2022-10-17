@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-<title>Afonso Raposo | Afonso Raposo</title>
+<title>Afonso Raposo | Remote document access with ransomware protection</title>
 <meta name="description" content="Personal website.
 ">
 
@@ -16,8 +16,8 @@
 " />
 <meta property="og:type" content="object" />
 <meta property="og:title" content="" />
-<meta property="og:url" content="https://afonsoraposo.com/blog/index.html" />
-<meta property="og:description" content="Afonso Raposo" />
+<meta property="og:url" content="https://afonsoraposo.com/projects/bag/" />
+<meta property="og:description" content="Remote document access with ransomware protection" />
 <meta property="og:image" content="https://github.com/Afonsocraposo/afonsocraposo.github.io/raw/master/assets/img/coding.jpg" />
 
 
@@ -39,7 +39,7 @@
 
 <link rel="stylesheet" href="/assets/css/main.css">
 
-<link rel="canonical" href="/blog/">
+<link rel="canonical" href="/projects/bag/">
 
 <!-- JQuery -->
 <!-- jQuery -->
@@ -104,7 +104,7 @@
           </li>
           
           <!-- Blog -->
-          <li class="nav-item active">
+          <li class="nav-item ">
             <a class="nav-link" href="/blog/">
               Blog
               
@@ -112,8 +112,6 @@
           </li>
           
           <!-- Other pages -->
-          
-          
           
           
           
@@ -183,42 +181,69 @@
     <div class="container mt-5">
       <div class="post">
 
-  <div class="header-bar">
-    <h1>Blog</h1>
-    <h2>My adventures log book</h2>
-  </div>
+  <header class="post-header">
+    <h1 class="post-title">Remote document access with ransomware protection</h1>
+    <p class="post-description">Allows documents to be shared over a public network in a secure fashion.</p>
+  </header>
 
+  <article>
+    <p>This project was developed within the scope of the Network and Computer Security 2021 course at Instituto Superior Técnico, being graded with 19 values out of 20.</p>
 
-  <ul class="post-list">
-    
-      <li>
-        <h3><a class="post-title" href="/blog/2020/encripta%C3%A7%C3%A3o">[PT] Encriptação no TEDxULisboa</a></h3>
-        <p class="post-meta">August 31, 2020</p>
-        <p>Descrição da implementação de encriptação ponto-a-ponto no TEDxULisboa</p>
-      </li>
-    
-      <li>
-        <h3><a class="post-title" href="/blog/2020/mk808">Running Debian Linux on MK808 Android Mini TV</a></h3>
-        <p class="post-meta">May 16, 2020</p>
-        <p>Here's my journey of installing Debian 8 (Jessie) with XFCE on the MK808 Android Mini TV</p>
-      </li>
-    
-      <li>
-        <h3><a class="post-title" href="/blog/2020/ppg">Measuring Your Heart Rate Using Your Phone’s Camera and Flutter</a></h3>
-        <p class="post-meta">April 8, 2020</p>
-        <p>Build a mobile heart-rate monitor that works without the need to wear any devices</p>
-      </li>
-    
-      <li>
-        <h3><a class="post-title" href="/blog/2019/sharedPref">Flutter: How to Save Objects in SharedPreferences</a></h3>
-        <p class="post-meta">September 7, 2019</p>
-        <p>An easy solution for small amounts of data</p>
-      </li>
-    
-  </ul>
+<h3 id="demo">Demo</h3>
 
-  
+<center>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/gQFS-jBWgyk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+</center>
 
+<p><br /></p>
+
+<h3 id="description">Description</h3>
+
+<p>This solution allows users to create projects and to push corresponding local files to a remote server. This is done through a client program, called bag, running in their computer, with which they interact similarly to Git, using commands such as clone, push, and pull.</p>
+
+<p>When they first login with the client, an asymmetric key pair is generated, which is later used for key sharing. At the login, the client receives and stores a refresh token and an access token with a short life window. Users are required to authenticate themselves when accessing the Resources API (RA) using the access token. The RA verifies the access token with the Auth API (AA) and grants access to the user. The refresh token is used to obtain a new access token once the original one expires.</p>
+
+<p>Each project contains its own symmetric key which is generated locally and used to encrypt files before uploading, ensuring confidentiality. This key is shared with collaborators when a user adds them to their project by encrypting it with their public key. To assure integrity of the files pushed and pulled from the server, each commit has its own signature which is verified before writing the data to memory.</p>
+
+<p>To mitigate ransomware attacks, all data in our Resources Server (RS) is periodically backed up. In case of an attack, the backed up data can be recovered. The machines use a Btrfs filesystem, which has built-in filesystem level snapshot support. A script running on the RS takes a read-only snapshot of the data that is intended to be stored periodically using Cron jobs. The snapshot is compressed into a zip file which is transferred to the Backup Server (BS) via a SCP connection.</p>
+
+<p>To ensure that the data stored in the BS is always valid (that is, none of the files have been modified unauthorizedly, such as by encryption through a ransomware attack), a script to check the integrity of the files in the RS is scheduled to run immediately before creating the snapshot. This compares the hash of each file to the corresponding hash stored in the database.</p>
+
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure style="text-align: center">
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/projects/bag/architecture.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="architecture" onerror="this.onerror=null; $('.responsive-img-srcset').remove();" />
+  </picture>
+</figure>
+
+    </div>
+</div>
+<div class="caption">
+    Diagram of the proposed architecture.
+</div>
+
+<div class="row">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure style="text-align: center">
+  <picture>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/projects/bag/protocol.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" title="protocol" onerror="this.onerror=null; $('.responsive-img-srcset').remove();" />
+  </picture>
+</figure>
+
+    </div>
+</div>
+<div class="caption">
+    Implemented protocol.
+</div>
+
+  </article>
 
 </div>
 

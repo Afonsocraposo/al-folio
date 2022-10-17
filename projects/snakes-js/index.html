@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-<title>Afonso Raposo | Afonso Raposo</title>
+<title>Afonso Raposo | snakes.js</title>
 <meta name="description" content="Personal website.
 ">
 
@@ -16,8 +16,8 @@
 " />
 <meta property="og:type" content="object" />
 <meta property="og:title" content="" />
-<meta property="og:url" content="https://afonsoraposo.com/blog/index.html" />
-<meta property="og:description" content="Afonso Raposo" />
+<meta property="og:url" content="https://afonsoraposo.com/projects/snakes-js/" />
+<meta property="og:description" content="snakes.js" />
 <meta property="og:image" content="https://github.com/Afonsocraposo/afonsocraposo.github.io/raw/master/assets/img/coding.jpg" />
 
 
@@ -39,7 +39,7 @@
 
 <link rel="stylesheet" href="/assets/css/main.css">
 
-<link rel="canonical" href="/blog/">
+<link rel="canonical" href="/projects/snakes-js/">
 
 <!-- JQuery -->
 <!-- jQuery -->
@@ -104,7 +104,7 @@
           </li>
           
           <!-- Blog -->
-          <li class="nav-item active">
+          <li class="nav-item ">
             <a class="nav-link" href="/blog/">
               Blog
               
@@ -112,8 +112,6 @@
           </li>
           
           <!-- Other pages -->
-          
-          
           
           
           
@@ -183,42 +181,73 @@
     <div class="container mt-5">
       <div class="post">
 
-  <div class="header-bar">
-    <h1>Blog</h1>
-    <h2>My adventures log book</h2>
-  </div>
+  <header class="post-header">
+    <h1 class="post-title">snakes.js</h1>
+    <p class="post-description">A fun Javascript game based on the classic Snake game</p>
+  </header>
+
+  <article>
+    <p>In this game, two players (1v1) can compete to see which can grow the largest snake, while also being able to eat the other player if he’s smaller.</p>
+
+<p>I developed this game in one afternoon! I was on vacation with my girlfriend and she challenged me to develop a complete game while she took a nap after lunch. As soon as she fell asleep, I started creating this. When she woke up, we had a fresh game to play together!</p>
+
+<p>Explore the source code <a href="https://www.github.com/afonsocraposo/snakes.js/">here</a>.</p>
+
+<h3 id="try-it">Try it!</h3>
+
+<body>
+    <p>1v1 snake game</p>
+    <canvas id="canvas" width="512" height="512" style="border:1px solid #000000;"></canvas>
+    <h3>Settings</h3>
+    <form method="get">
+        <label for="FPS">FPS:</label>
+        <select id="FPS" name="FPS">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="15" selected="">15</option>
+          <option value="20">20</option>
+          <option value="25">25</option>
+          <option value="30">30</option>
+        </select>
+        &nbsp;&nbsp;
+        <label for="SIZE">Snake Size:</label>
+        <select id="SIZE" name="SIZE">
+          <option value="4">4</option>
+          <option value="8">8</option>
+          <option value="16" selected="">16</option>
+          <option value="32">32</option>
+          <option value="64">64</option>
+        </select>
+        &nbsp;&nbsp;
+        <label for="WORLD">World Size:</label>
+        <select id="WORLD" name="WORLD">
+          <option value="128">128</option>
+          <option value="256" selected="">256</option>
+          <option value="512">512</option>
+          <option value="1024">1024</option>
+        </select>
+        &nbsp;&nbsp;
+        <input type="submit" value="Submit" />
+    </form>
+    <h3>Instructions</h3>
+    <p>
+    <b>Controls:</b>
+    <br />
+    <b>Snake 1:</b> W A S D &nbsp;&nbsp; <b>Snake 2:</b> I J K L
+    </p>
+    <p>
+    If you are the biggest snake and hit the head of the other snake, you win.
+    &lt;/br&gt;
+    If you hit any other part of the snake, you lose.
+    &lt;/br&gt;
+    If both snakes are the same size and hit their heads, it's a tie.
+    </p>
+
+</body>
+<script src="/assets/js/snakes.js"></script>
 
 
-  <ul class="post-list">
-    
-      <li>
-        <h3><a class="post-title" href="/blog/2020/encripta%C3%A7%C3%A3o">[PT] Encriptação no TEDxULisboa</a></h3>
-        <p class="post-meta">August 31, 2020</p>
-        <p>Descrição da implementação de encriptação ponto-a-ponto no TEDxULisboa</p>
-      </li>
-    
-      <li>
-        <h3><a class="post-title" href="/blog/2020/mk808">Running Debian Linux on MK808 Android Mini TV</a></h3>
-        <p class="post-meta">May 16, 2020</p>
-        <p>Here's my journey of installing Debian 8 (Jessie) with XFCE on the MK808 Android Mini TV</p>
-      </li>
-    
-      <li>
-        <h3><a class="post-title" href="/blog/2020/ppg">Measuring Your Heart Rate Using Your Phone’s Camera and Flutter</a></h3>
-        <p class="post-meta">April 8, 2020</p>
-        <p>Build a mobile heart-rate monitor that works without the need to wear any devices</p>
-      </li>
-    
-      <li>
-        <h3><a class="post-title" href="/blog/2019/sharedPref">Flutter: How to Save Objects in SharedPreferences</a></h3>
-        <p class="post-meta">September 7, 2019</p>
-        <p>An easy solution for small amounts of data</p>
-      </li>
-    
-  </ul>
-
-  
-
+  </article>
 
 </div>
 

@@ -1,0 +1,2167 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="https://afonsoraposo.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://afonsoraposo.com/" rel="alternate" type="text/html" /><updated>2022-10-17T15:31:38+00:00</updated><id>https://afonsoraposo.com/feed.xml</id><title type="html">Afonso Raposo</title><subtitle>Personal website.
+</subtitle><entry><title type="html">Digital to Analog Conversion</title><link href="https://afonsoraposo.com/teaching/iab2122/2022/dac" rel="alternate" type="text/html" title="Digital to Analog Conversion" /><published>2022-03-22T00:00:00+00:00</published><updated>2022-03-22T00:00:00+00:00</updated><id>https://afonsoraposo.com/teaching/iab2122/2022/dac</id><content type="html" xml:base="https://afonsoraposo.com/teaching/iab2122/2022/dac"><![CDATA[<p>So this week you’ll be exploring digital to analog conversion, outputing an analog signal with your Arduino.</p>
+
+<p>The guide for this lab is <a href="https://fenix.tecnico.ulisboa.pt/downloadFile/563568428849708/L3.%20Digital-to-Analog%20Conversion%20%28DAC%29%20-%20Jupyter%20Notebook.pdf">here</a>.</p>
+
+<p>In this lab you’ll have to do two things at the same time - control a square wave and measure the analog input - without blocking the main loop. How to do that?</p>
+
+<p>First, to generate a square wave, you can use the <code class="language-plaintext highlighter-rouge">digitalWrite</code> function. Timing the turn <code class="language-plaintext highlighter-rouge">HIGH</code>/<code class="language-plaintext highlighter-rouge">LOW</code>, you can generate a square wave. Read more about this function <a href="https://www.arduino.cc/reference/en/language/functions/digital-io/digitalwrite/">here</a>.</p>
+
+<p>You can use the function <code class="language-plaintext highlighter-rouge">millis()</code> to keep track of time. Once a previously defined ammount of time has passed, you do something. Check the following example:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">previous_time</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">dt</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+<span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">current_time</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="n">setup</span> <span class="p">{</span>
+    <span class="c1">// setup your code</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">loop</span> <span class="p">{</span>
+    <span class="n">current_time</span> <span class="o">=</span> <span class="n">millis</span><span class="p">();</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">current_time</span> <span class="o">-</span> <span class="n">previous_time</span> <span class="o">&gt;</span> <span class="n">dt</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// do something here</span>
+        <span class="n">previous_time</span> <span class="o">=</span> <span class="n">current_time</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>As you can see in the example above, this will <code class="language-plaintext highlighter-rouge">do something</code> every <code class="language-plaintext highlighter-rouge">dt</code> milliseconds without blocking the <code class="language-plaintext highlighter-rouge">loop</code>.</p>
+
+<p>To do two things at the same time, with different intervals, without blocking the <code class="language-plaintext highlighter-rouge">loop</code>, you can use something similar to the following code:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">pt1</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">pt2</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">dt1</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">dt2</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+
+<span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">ct</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="n">setup</span> <span class="p">{</span>
+    <span class="c1">// setup your code</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">loop</span> <span class="p">{</span>
+    <span class="n">ct</span> <span class="o">=</span> <span class="n">millis</span><span class="p">();</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">ct</span> <span class="o">-</span> <span class="n">pt1</span> <span class="o">&gt;</span> <span class="n">dt1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// do something here</span>
+        <span class="n">pt1</span> <span class="o">=</span> <span class="n">ct</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">ct</span> <span class="o">-</span> <span class="n">pt2</span> <span class="o">&gt;</span> <span class="n">dt2</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// do something else here</span>
+        <span class="n">pt2</span> <span class="o">=</span> <span class="n">ct</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Another thing that you have to do is generating a square wave with half the amplitude, Vcc/2. You can easily accomplish that using a voltage divider:</p>
+
+<p align="center">
+<img alt="voltage divider" style="background-color:white" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Impedance_voltage_divider.svg/374px-Impedance_voltage_divider.svg.png" />
+</p>
+
+<p>Where <code class="language-plaintext highlighter-rouge">Vin</code> is connected to the digital output pin and <code class="language-plaintext highlighter-rouge">Vout</code> to the analog input pin.</p>]]></content><author><name></name></author><category term="teaching" /><category term="iab2122" /><summary type="html"><![CDATA[Some tips for the lab]]></summary></entry><entry><title type="html">Analog to Digital Conversion</title><link href="https://afonsoraposo.com/teaching/iab2122/2022/adc" rel="alternate" type="text/html" title="Analog to Digital Conversion" /><published>2022-03-18T00:00:00+00:00</published><updated>2022-03-18T00:00:00+00:00</updated><id>https://afonsoraposo.com/teaching/iab2122/2022/adc</id><content type="html" xml:base="https://afonsoraposo.com/teaching/iab2122/2022/adc"><![CDATA[<p>Why do you theoretically expect one value, with the multimeter you measure another and the Arduino reads a different one?</p>
+
+<p>Welcome to electronics!</p>
+
+<p>As you may know every electronics components has a tolerance, which means, they always have an error associated to it. Therefore, the Arduino might not output exactly 3.3V or 5V. Try and measure it with the multimeter!</p>
+
+<p>As you can also verify, different analog channels (A0, A1, …), give different readings. Why is that? Like previously, the components associated with each ADC (analog-digital converter) - every analog channel has a different ADC - have a tolerance, therefore, they might return different readings. Experiment with different analog channels and verify that they are not all the same.</p>
+
+<p>Now why does your signal fluctuate even though you expect a constant signal? Well, imagine that the Arduino voltage has some small fluctuations and every 10 reads the ADC makes 1 faulty read. If you increase the number of reads from 10 reads per second to 100 reads per second, of course the ammount of faulty reads per second will increase.</p>
+
+<p>And that’s all folks. Here are some tips for your report of L2.</p>]]></content><author><name></name></author><category term="teaching" /><category term="iab2122" /><summary type="html"><![CDATA[Take this into account]]></summary></entry><entry><title type="html">How to work at home?</title><link href="https://afonsoraposo.com/teaching/iab2122/2022/at-home" rel="alternate" type="text/html" title="How to work at home?" /><published>2022-03-10T00:00:00+00:00</published><updated>2022-03-10T00:00:00+00:00</updated><id>https://afonsoraposo.com/teaching/iab2122/2022/at-home</id><content type="html" xml:base="https://afonsoraposo.com/teaching/iab2122/2022/at-home"><![CDATA[<p>If you want to work at home but don’t have the tools necessary, <em>e.g.</em>, an Arduino, you can simply use the ThinkerCad simulator.</p>
+
+<p>To start using it, just go to <a href="https://www.tinkercad.com/">tinkercad.com</a> and sign in using one of the available methods.</p>
+
+<p>Then, select “Circuits” and start thinkering!</p>
+
+<p align="center">
+  <img src="https://courses.ideate.cmu.edu/16-223/f2021/text/_images/Tinkercad-overview.png" alt="ThinkerCad Arduino Dashboard" width="400" />
+</p>
+
+<p>If you prefer the real thing, you can also buy an electronics kit at Mauser. The one we provide for laboratory classes is this:</p>
+
+<p><a href="https://mauser.pt/catalog/product_info.php?cPath=324_708_1569&amp;products_id=096-8998">https://mauser.pt/catalog/product_info.php?cPath=324_708_1569&amp;products_id=096-8998</a></p>
+
+<p align="center">
+  <img src="https://mauser.pt/images/82c7405fa1a48e97d0eb21f3b9458657.jpg" alt="MakerBit" width="400" />
+</p>
+
+<p>It’s currently out of stock, so I’d suggest one of the following options:</p>
+
+<ol>
+  <li>Buy a basic electronics (maker) kit and an Arduino:
+    <ul>
+      <li><a href="https://mauser.pt/catalog/product_info.php?cPath=1667_2842&amp;products_id=096-6785">Kit de desenvolvimento e iniciação electrónica compatível com Arduino e Raspberry Pi - Mauser</a></li>
+      <li><a href="https://mauser.pt/catalog/product_info.php?cPath=1667_2889_2891_2888&amp;products_id=096-7049">Microcontrolador compatível com Arduino UNO R3</a></li>
+    </ul>
+  </li>
+</ol>
+
+<p align="center">
+  <img src="https://mauser.pt/images/b48b9cdc01b08e241dc0b25a6c13bf78.jpg" alt="Mauser electronics kit" height="200" />
+  <img src="https://mauser.pt/images/e1590cd1e2a062a835e950a4e927fce4.jpg" alt="Mauser Arduino" height="200" />
+</p>
+
+<ol>
+  <li>Buy an IoT electronics kit:
+    <ul>
+      <li><a href="https://mauser.pt/catalog/product_info.php?cPath=1667_2842&amp;products_id=096-7979">Kit para desenvolvimento e iniciação em electrónica - especial Movimento Maker IoT com NodeMcu ESP8266 (V2) - Mauser</a></li>
+    </ul>
+  </li>
+</ol>
+
+<p align="center">
+  <img src="https://mauser.pt/images/2d8a957e46a9288bc8eb3bb411b5de35.jpg" alt="Mauser IoT kit" width="400" />
+</p>
+
+<p>In 2020 I bought the IoT kit and I’m very satisfied with it. Instead of providing an Arduino, this kit comes with the ESP8266, which you can also program with the Arduino IDE, and it offers Wi-Fi connection. It only has one analog input port, which might be one drawback.</p>
+
+<p>Choose wisely!</p>]]></content><author><name></name></author><category term="teaching" /><category term="iab2122" /><summary type="html"><![CDATA[I'll give you some tips on how to work at home]]></summary></entry><entry><title type="html">Serial communication</title><link href="https://afonsoraposo.com/teaching/iab2122/2022/serial-communication" rel="alternate" type="text/html" title="Serial communication" /><published>2022-03-08T00:00:00+00:00</published><updated>2022-03-08T00:00:00+00:00</updated><id>https://afonsoraposo.com/teaching/iab2122/2022/serial-communication</id><content type="html" xml:base="https://afonsoraposo.com/teaching/iab2122/2022/serial-communication"><![CDATA[<p>If you are doing L1. Seeeduino Nano Essentials, you’ll need to calculate the ammount of bits sent through the serial port in each main loop iteration.</p>
+
+<p>In your script you can find:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Serial.println(&lt;stuff goes here&gt;);
+</code></pre></div></div>
+
+<p>Every time that command is executed, the data is sent in a frame like so:</p>
+
+<blockquote>
+  <p>Each block (usually a byte) of data transmitted is actually sent in a packet or frame of bits. Frames are created by appending synchronization and parity bits to our data.</p>
+</blockquote>
+
+<p><img src="https://cdn.sparkfun.com/r/700-700/assets/f/9/c/0/2/50d2066fce395fc43b000000.png" alt="Serial communication frame" /></p>
+
+<p>In the Arduino <code class="language-plaintext highlighter-rouge">Serial.begin()</code> <a href="https://www.arduino.cc/reference/en/language/functions/communication/serial/begin/">documentation</a>, you can find:</p>
+
+<blockquote>
+  <p>An optional second argument configures the data, parity, and stop bits. The default is 8 data bits, no parity, one stop bit.</p>
+</blockquote>
+
+<p>I advise you to read more about it at <a href="https://learn.sparkfun.com/tutorials/serial-communication">Serial Communication - Sparkfun</a>.</p>]]></content><author><name></name></author><category term="teaching" /><category term="iab2122" /><summary type="html"><![CDATA[How does serial communication work?]]></summary></entry><entry><title type="html">Extra lab shift</title><link href="https://afonsoraposo.com/teaching/iab2122/2022/lab-tuesday" rel="alternate" type="text/html" title="Extra lab shift" /><published>2022-03-07T00:00:00+00:00</published><updated>2022-03-07T00:00:00+00:00</updated><id>https://afonsoraposo.com/teaching/iab2122/2022/lab-tuesday</id><content type="html" xml:base="https://afonsoraposo.com/teaching/iab2122/2022/lab-tuesday"><![CDATA[<p>Hi everyone!</p>
+
+<p>So there a new lab shift was created to support the number of enrolled students.</p>
+
+<p>This lab shift will take place on Tuesdays from 9:00 to 12:00. It actually concatenates two different lab sessions, one from 9:00 to 10:30 and another from 10:30 to 12:00.</p>
+
+<p>So you’ll carry out two lab guides:</p>
+
+<ul>
+  <li><a href="https://fenix.tecnico.ulisboa.pt/downloadFile/845043405573197/L0.%20Lab%20Introduction.pdf">L0. Lab Introduction</a> - not evaluated</li>
+  <li><a href="https://fenix.tecnico.ulisboa.pt/downloadFile/845043405573201/L1.%20Seeeduino%20Nano%20Essentials%20-%20Jupyter%20Notebook.pdf">L1. Seeeduino Nano Essentials</a> - <strong>evaluated</strong></li>
+</ul>
+
+<p>I’ll see you tomorrow!</p>]]></content><author><name></name></author><category term="teaching" /><category term="iab2122" /><summary type="html"><![CDATA[There will be a laboratory session this Tuesday]]></summary></entry><entry><title type="html">Welcome!</title><link href="https://afonsoraposo.com/teaching/iab2122/2022/hello" rel="alternate" type="text/html" title="Welcome!" /><published>2022-03-05T00:00:00+00:00</published><updated>2022-03-05T00:00:00+00:00</updated><id>https://afonsoraposo.com/teaching/iab2122/2022/hello</id><content type="html" xml:base="https://afonsoraposo.com/teaching/iab2122/2022/hello"><![CDATA[<p>Hi everyone!</p>
+
+<p>If you enrolled into L03, I’ll be accompanying you through out the next 7 weeks.</p>
+
+<p>The first lab class will happen next Thursday at 14:30 at Room 02.09A. If you don’t know where it’s located, just go to the South Tower, go down to the -2 floor and look for a small room with an open door and lots of oscilloscopes inside.</p>
+
+<p><em>This is an oscilloscope:</em></p>
+
+<p><img src="/assets/img/teaching/iab_21_22/oscilloscope.jpg" alt="/assets/img/teaching/iab_21_22" width="50%" />.</p>
+
+<h3 id="ill-see-you-there">I’ll see you there!</h3>]]></content><author><name></name></author><category term="teaching" /><category term="iab2122" /><summary type="html"><![CDATA[A simple welcome note]]></summary></entry><entry><title type="html">[PT] Encriptação no TEDxULisboa</title><link href="https://afonsoraposo.com/blog/2020/encripta%C3%A7%C3%A3o" rel="alternate" type="text/html" title="[PT] Encriptação no TEDxULisboa" /><published>2020-08-31T00:00:00+00:00</published><updated>2020-08-31T00:00:00+00:00</updated><id>https://afonsoraposo.com/blog/2020/encripta%C3%A7%C3%A3o</id><content type="html" xml:base="https://afonsoraposo.com/blog/2020/encripta%C3%A7%C3%A3o"><![CDATA[<p>Nas aplicações de mensagens da atualidade, <strong>encriptação</strong> é algo que muitas vezes tomamos como garantido e nem pensamos nisso.
+<br /></p>
+
+<h4 id="mas-como-é-que-as-nossas-mensagens-são-realmente-armazenadas"><strong>Mas, como é que as nossas mensagens são realmente armazenadas?</strong></h4>
+
+<p>Na aplicação oficial do TEDxULisboa 2020 <strong>as mensagens são guardadas de forma segura numa base de dados usando encriptação</strong>. Desta forma, qualquer informação pessoal e/ou sensível contida numa mensagem só é acessível pelo seu remetente e destinatário.
+<br /></p>
+
+<p>Comecemos por pensar na aplicação <strong>Whatsapp</strong>. Esta aplicação de mensagens utiliza encriptação de <strong>ponto-a-ponto</strong>. Este tipo de encriptação é o equivalente a ter 2 copos unidos por 1 fio, uma pessoa fala pelo copo e só a outra pessoa, na outra ponta do fio, consegue ouvir a mensagem.</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/posts/2020-08-31-encriptação/whatsapp.png" />
+    </div>
+</div>
+<div class="caption">
+    Imagem de <a href="https://hedgetrade.com/end-to-end-encryption-ban-attempts/" target="_blank" rel="noopener noreferrer">Edgetrade.com</a>.
+</div>
+
+<p>Encriptação de ponto-a-ponto é um exemplo, mas o que é realmente encriptação? Não sou nenhum profissional nisto, mas tentarei explicar este conceito o melhor possível.</p>
+
+<h5 id="em-criptografia-encriptação-ou-cifragem-é-o-processo-de-transformar-informação-purotexto-usando-um-algoritmo-chamado-cifra-de-modo-a-impossibilitar-a-sua-leitura-a-todos-exceto-aqueles-que-possuam-uma-identificação-particular-geralmente-referida-como-chave--encriptação-wikipédia"><em>Em criptografia, encriptação, ou cifragem, é o processo de transformar informação (purotexto) usando um algoritmo (chamado cifra) de modo a impossibilitar a sua leitura a todos exceto aqueles que possuam uma identificação particular, geralmente referida como chave. — Encriptação, Wikipédia</em></h5>
+
+<p>Este processo envolve <strong>chaves de encriptação</strong>, que são, de forma simplificada, <strong>palavras-passe</strong>. Imaginemos que eu tenho uma mensagem, representada por uma carta. Quando se cifra (encripta) a mensagem, é como se a referida carta fosse colocada dentro dum cofre, acessível apenas com a chave certa. Na realidade, cifrar uma mensagem é a transformação de uma sequência de caracteres, através de um processo reversível, para uma outra sequência de caracteres. A chave de encriptação neste processo representa “instruções” para reverter esta transformação.</p>
+
+<p>O último conceito que é importante dominar antes de explicar como está implementada a encriptação na aplicação do TEDxULisboa <strong>é a diferença entre chaves simétricas e chaves assimétricas</strong>.</p>
+
+<p>Uma <strong>chave simétrica</strong> é uma sequência de caracteres que serve como “instruções” para cifrar e decifrar (desencriptar) uma sequência de caracteres (mensagem). Seria semelhante então ao cofre que falei anteriormente em que uma chave serve para abrir e fechar o cofre, cifrar e decifrar uma mensagem.</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <center>
+            <img class="img-fluid rounded z-depth-1" src="/assets/img/posts/2020-08-31-encriptação/keys-sym.png" />
+        </center>
+    </div>
+</div>
+<div class="caption">
+    Imagem de <a href="https://www.101computing.net/symmetric-vs-asymmetric-encryption/" target="_blank" rel="noopener noreferrer">101Computing.net</a>.
+</div>
+
+<p>Uma <strong>chave assimétrica</strong> é diferente. É constituída por um par único de chaves: uma chave pública e outra privada. A chave pública, como o nome diz, pode ser acessível por todos e serve para cifrar uma mensagem. Porém, depois de cifrada, não é possível decifrar usando a chave pública. Para decifrar é necessário utilizar a chave privada que, como o nome diz, só o recetor da mensagem deverá possuir esta chave. Gosto de comparar este tipo de chave a uma caixa de correio, em que qualquer pessoa pode colocar cartas lá dentro, mas só o dono da mesma tem acesso ao seu conteúdo.</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <center>
+            <img class="img-fluid rounded z-depth-1" src="/assets/img/posts/2020-08-31-encriptação/keys-asym.png" />
+        </center>
+    </div>
+</div>
+<div class="caption">
+    Imagem de <a href="https://www.101computing.net/symmetric-vs-asymmetric-encryption/" target="_blank" rel="noopener noreferrer">101Computing.net</a>
+</div>
+
+<center>
+<h1>
+. . .
+</h1>
+</center>
+
+<h3 id="estamos-agora-prontos-para-compreender-o-sistema-de-encriptação-do-tedxulisboa-"><strong>Estamos agora prontos para compreender o sistema de encriptação do TEDxULisboa! 🥳</strong></h3>
+
+<p>Cada utilizador da aplicação possui uma chave assimétrica, ou seja, uma chave pública e uma chave privada. Este par de chaves é gerado aleatoriamente no telemóvel de cada pessoa durante o processo de registo e guardado na memória do mesmo. Porém, esta chave tem de ser guardada num lugar mais acessível, pois será necessário recuperar as chaves cada vez que se inicia sessão. Estas chaves são então guardadas na base de dados. A chave pública pode ser guardada sem qualquer tipo de protecção, pois, como o nome diz, é pública. A chave privada requer algum cuidado extra ao ser guardada, pois é pessoal e intransmissível. Portanto, cada chave privada é cifrada usando uma chave simétrica e depois guardada na base de dados.</p>
+
+<p>O truque é gerar esta chave simétrica de forma pessoal e reproduzível para cada utilizador. Sendo assim, <strong>a chave privada de cada utilizador é cifrada utilizando uma chave simétrica gerada a partir da palavra-passe de cada um e depois guardada na base de dados</strong>. Desta forma, a chave simétrica que cifra a chave privada é pessoal, pois apenas cada utilizador tem conhecimento da sua palavra-passe.
+<br /></p>
+
+<p><em>Eu sei, é muita informação duma vez, mas é necessário isto tudo para manter a segurança deste sistema de encriptação. 🤓</em>
+<br /></p>
+
+<h4 id="agora-que-cada-utilizador-tem-a-sua-chave-pública-acessível-por-todos-e-chave-privada-acessível-apenas-por-ele-mesmo-como-se-trata-da-encriptação-das-mensagens"><strong>Agora que cada utilizador tem a sua chave pública, acessível por todos, e chave privada, acessível apenas por ele mesmo, como se trata da encriptação das mensagens?</strong></h4>
+
+<p>Uma opção seria: quando o utilizador A quer mandar uma mensagem ao utilizador B, cifra a mensagem com a chave pública do utilizador B e, desta forma, só este terá acesso à mesma. Isto seria equivalente ao utilizador A escrever uma carta e colocá-la na caixa de correio do utilizador B, à qual só este tem acesso. O problema deste método é que o utilizador A perde acesso às mensagens que enviou, portanto, este método não se adequa.
+<br />
+<br /></p>
+
+<h3 id="como-funciona-então-a-encriptação-da-aplicação-do-tedxulisboa"><strong>Como funciona então a encriptação da aplicação do TEDxULisboa?</strong></h3>
+
+<p>O utilizador A quer enviar uma mensagem ao utilizador B, então escreve uma carta e arranja um cofre. Coloca a carta no cofre e faz 2 cópias da chave do mesmo. Uma cópia fica para si mesmo (utilizador A) e outra para o utilizador B. De forma a guardar estas chaves do cofre, o utilizador A coloca a sua chave na sua caixa de correio e a chave do utilizador B na caixa de correio do mesmo. Na realidade, o que acontece é: quando o utilizador A escreve a mensagem, gera uma chave simétrica aleatória. Esta chave simétrica será utilizada para cifrar todas as mensagens da conversa entre os utilizadores A e B. A chave simétrica gerada é cifrada e armazenada, individualmente, utilizando a chave pública do utilizador A e a chave pública do utilizador B, assim, só estes terão acesso à chave simétrica.</p>
+
+<p><strong>Este método funciona bastante bem, pois cria uma espécie de sala segura por cada conversa à qual só os participantes da mesma têm acesso</strong>. Se quiserem adicionar o utilizador C à conversa, basta criar uma nova cópia da chave simétrica e cifrar usando a chave pública do utilizador C.</p>
+
+<p><strong>Porém, existe um defeito neste método:</strong> se um utilizador perder acesso à sua chave privada, por exemplo, terminando sessão ou trocando de dispositivo, e não se lembrar da sua palavra-passe, perderá a capacidade de decifrar todas as mensagens das suas conversas. Porquê? Porque sem se lembrar da sua palavra-passe, não é possível decifrar a sua chave privada na base de dados. Sem a sua chave privada, não é possível decifrar as chaves simétricas associadas às conversas das quais faz parte. E sem estas chaves, não será possível decifrar o conteúdo de cada conversa.</p>
+
+<p>Este defeito é uma <strong>consequência do nível de segurança deste método</strong>, pois significa que as mensagens guardadas na base de dados só são acessíveis pelas pessoas certas, nem um administrador consegue ter acesso às mesmas, pois as mensagens encontram-se encriptadas na base de dados e só são decifráveis contendo acesso às chaves correspondentes.</p>
+
+<p><strong>É assim que o TEDxULisboa mantém as mensagens seguras na base de dados</strong>. Aconselho-te a ver um vídeo que fiz onde explico esta metodologia duma forma mais ilustrativa e que poderá complementar esta explicação:</p>
+
+<div>
+  <div style="position:relative;padding-top:56.25%;">
+    <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;" src="https://www.youtube.com/embed/d_0KLxpG62E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+    </div>
+</div>
+<p><br /></p>]]></content><author><name></name></author><category term="blog" /><summary type="html"><![CDATA[Descrição da implementação de encriptação ponto-a-ponto no TEDxULisboa]]></summary></entry><entry><title type="html">Running Debian Linux on MK808 Android Mini TV</title><link href="https://afonsoraposo.com/blog/2020/mk808" rel="alternate" type="text/html" title="Running Debian Linux on MK808 Android Mini TV" /><published>2020-05-16T00:00:00+00:00</published><updated>2020-05-16T00:00:00+00:00</updated><id>https://afonsoraposo.com/blog/2020/mk808</id><content type="html" xml:base="https://afonsoraposo.com/blog/2020/mk808"><![CDATA[<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/posts/2020-05-16-mk808/setup.jpeg" />
+    </div>
+</div>
+<div class="caption">
+    My setup on the last days during this journey and the device itself.
+</div>
+
+<p>Many years ago, I acquired this device, the MK808 Android Mini TV. This device natively runs Android and its made for streaming content on a TV via Mini HDMI port. This device has 8GB NAND Flash, a CPU Dual Core Cortex-A9 Up to 1.6GHz (Rochip RK 3066), and 1GB of RAM.</p>
+
+<p>In the last years, I’ve started using Linux. I’m no professional, but I love it. Some days ago, I decided to see if this old device I had laying around could run Linux. It runs Android, that’s a good sign.</p>
+
+<p>After searching and reading a lot of 2010–2013 forum posts, I was able to figure out how to do it. I’ll list the main sources of information I used:</p>
+<ul>
+  <li><a href="http://cobecoballes-embedded.blogspot.com/2013/08/writing-image-from-mk808rk3066-in-linux.html">Writing Image and booting Linux from MK808/RK3066</a></li>
+  <li><a href="https://www.slatedroid.com/topic/55626-my-version-of-the-linux-kernel-for-mk808/"><em>(unavailable)</em> My version of the Linux kernel for mk808 - MK808</a></li>
+</ul>
+
+<p>I’m not claiming that this is the best way of doing this process, because it probably isn’t. The objective of this is to share my journey and maybe help someone who wants to do this.</p>
+
+<h4 id="disclaimer-i-cant-give-you-a-warranty-that-this-will-work-on-your-device-and-i-wont-be-held-responsible-for-any-damage-to-your-device"><em><b>DISCLAIMER:</b> I can’t give you a warranty that this will work on your device and I won’t be held responsible for any damage to your device.</em></h4>
+
+<center>
+<h1>
+. . .
+</h1>
+</center>
+
+<p>The first step was flashing a new kernel to the device. The kernel I used was compiled by Oleg, who did serious work on this subject. You can find his GitHub <a href="https://github.com/olegk0">here</a>.</p>
+
+<p>You can download the already compiled kernel on his <a href="https://drive.google.com/drive/u/0/folders/0B6QRwjacGTzCU3RWZ1M2d1FkcTg">Google Drive</a>.</p>
+
+<p>I made a <strong>backup</strong> of the files on my personal <a href="https://drive.google.com/drive/folders/1_otAwk9GmgpxaDkDGse6-B-uQcrXF99K?usp=sharing">Drive</a></p>
+
+<p>Download the <code class="language-plaintext highlighter-rouge">recovery.img</code> and <code class="language-plaintext highlighter-rouge">mod+fw.tar.gz</code> files from the folder 30.36 (kernel version). I used this kernel because it supports 1080p and was the one that I was able to get the wifi dongle driver working.</p>
+
+<p>Now onto flashing the kernel to the device. I did this in Linux, so I’ll explain the procedure on this platform. We need to boot into recovery mode. To do so, press the reset hole, connect the mini USB cable to the OTG port, hold for around 5 seconds and it should be all good.</p>
+
+<p>Run the command on the terminal:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lsusb
+</code></pre></div></div>
+
+<p>And the device should appear:</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/posts/2020-05-16-mk808/lsusb.png" />
+    </div>
+</div>
+<div class="caption">
+    Result of lsusb and the device highlighted.
+</div>
+
+<p>Register the device ID, on my case: <code class="language-plaintext highlighter-rouge">2207:300a</code>.</p>
+
+<p>Now, the software used to flash the kernel was downloaded from <a href="https://github.com/justgr/arnova-tools">justgr/arnova-tools</a>.</p>
+
+<p>Before compiling, you need to add a line to the code of <code class="language-plaintext highlighter-rouge">rkflashtool.c</code> with your <strong>device ID</strong>:</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/posts/2020-05-16-mk808/code.png" />
+    </div>
+</div>
+<div class="caption">
+    Source code of rkflashtool.c and the snippet of code to add.
+</div>
+
+<p>You can now compile it using the command:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcc -o rkflashtool rkflashtool.c -lusb-1.0 -O2 -W -Wall -s
+</code></pre></div></div>
+
+<p>Now, let’s flash the kernel!</p>
+
+<p>First, backup the 8GB NAND flash by dumping its contents into a file. Run the command:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo rkflashtool r 0x00000000 0x01000000 &gt; myflashbackup.bin
+</code></pre></div></div>
+
+<p>You can also backup the current kernel:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo rkflashtool r 0x00004000 0x00004000 &gt; mk808kernel.img
+</code></pre></div></div>
+
+<p>To flash the downloaded kernel, 3.0.36 from Oleg:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo rkflashtool w 0x00004000 0x00004000 &lt; recovery.img
+</code></pre></div></div>
+
+<p>When this finishes, you should have the kernel on your device. Connect everything back and turn on the device!</p>
+
+<p>If you see these two penguins, everything went well:</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/posts/2020-05-16-mk808/linux.jpeg" />
+    </div>
+</div>
+<div class="caption">
+    Linux kernel booting screen.
+</div>
+
+<center>
+<h1>
+. . .
+</h1>
+</center>
+
+<p>The next step is preparing the SD card for installing Linux on it.</p>
+
+<p>On the guides I found, they say to format the SD card with <code class="language-plaintext highlighter-rouge">ext4</code>. I wasn’t able to get this format working, because I got the error:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/dev/… has unsupported feature(s): metadata_csum
+e2fsck: Get a newer version of e2fsck!
+</code></pre></div></div>
+
+<p>After googling it, I was able to figure out that the problem was caused by the version of e2fsck not being able to process the <code class="language-plaintext highlighter-rouge">ext4</code> SD card. Therefore, I format it with <code class="language-plaintext highlighter-rouge">ext2</code>, which will also help with the number of events of read/write of the SD card.</p>
+
+<p>To format the SD card, run the command:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo mkfs.ext2 /dev/sdg1 -L linuxroot
+</code></pre></div></div>
+
+<p><strong>Replace</strong> the <code class="language-plaintext highlighter-rouge">sdg1</code> by the name of the SD card on your computer. Notice that I labeled the partition with <code class="language-plaintext highlighter-rouge">linuxroot</code>, which is a requirement for the kernel.</p>
+
+<p>After formatting the SD card, it’s time to create a rootfs on the SD card. I’ll use Debian because it is compatible and makes this process very easy. Mount the SD card, by doing:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo mount /dev/sdg1 /mnt/tmp
+</code></pre></div></div>
+
+<p>And then run the command:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo debootstrap --foreign --verbose --arch=armhf jessie /mnt/tmp
+</code></pre></div></div>
+
+<p>When it finishes, you have to copy the <code class="language-plaintext highlighter-rouge">modules</code> and <code class="language-plaintext highlighter-rouge">firmware</code> to the rootfs. Make sure you extract the folder using <strong>sudo</strong>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo tar -zxvf mod+fw.tar.gz
+</code></pre></div></div>
+
+<p>Then, copy the folders <code class="language-plaintext highlighter-rouge">firmware</code> and <code class="language-plaintext highlighter-rouge">modules</code> to <code class="language-plaintext highlighter-rouge">/mnt/tmp/lib</code>.</p>
+
+<p>You will also need to edit the <code class="language-plaintext highlighter-rouge">/etc/fstab</code> file so the system mounts the rootfs. Your <code class="language-plaintext highlighter-rouge">/etc/fstab</code> file should look like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># &lt;file system&gt;                                 &lt;dir&gt;   &lt;type&gt;  &lt;options&gt;       &lt;dump&gt;  &lt;pass&gt;
+UUID=8c2995cd-60e8-4537-867e-f15083bf7442       /       ext2    defaults        1       1
+</code></pre></div></div>
+
+<p><strong>Replace</strong> the UUID with your SD card UUID. You can find it by running the command on your computer (outside the rootfs):</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ls /dev/disk/by-uuid -l
+</code></pre></div></div>
+
+<p>Now, it’s time to setup the freshly installed OS. First <code class="language-plaintext highlighter-rouge">chroot</code> into the directory:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo chroot /mnt/tmp
+</code></pre></div></div>
+
+<p>Now that you are inside the generated rootfs, change the root password:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>passwd
+</code></pre></div></div>
+
+<p>Then, setup your account - select your username and your password which will be prompted:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>adduser [username]
+</code></pre></div></div>
+
+<p>Now add your account to <code class="language-plaintext highlighter-rouge">sudoers</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>addgroup [username] sudo
+</code></pre></div></div>
+
+<p>You now have your own account!</p>
+
+<p>You won’t have internet on your device when you boot it, so, we should now setup everything necessary.</p>
+
+<p>Add the <code class="language-plaintext highlighter-rouge">non-free</code> and <code class="language-plaintext highlighter-rouge">contrib</code> repositories to the <code class="language-plaintext highlighter-rouge">/etc/apt/sources.list</code> file:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>deb http://deb.debian.org/debian jessie main contrib non-free
+deb-src http://deb.debian.org/debian jessie main contrib non-free
+</code></pre></div></div>
+
+<p>Then, update the repositories and upgrade the packages:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>apt update &amp;&amp; apt upgrade
+</code></pre></div></div>
+
+<p>I advise you to install the following packages:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>apt install firmware-misc-nonfree firmware-atheros firmware-ralink
+</code></pre></div></div>
+
+<p>This will install some firmware and, if you’re lucky, your wifi dongle will work when plugged.</p>
+
+<p>Mine didn’t. I have a WN722N and I had to install the drivers from the <a href="https://www.tp-link.com/pt/support/download/tl-wn722n/">official website</a> (I’m not sure if this was what did it, I spent a lot of hours trying to make it work):</p>
+
+<p>You should now have the device working with Debian 8 Jessie and with a connection to the internet.</p>
+
+<p>Once you boot into the device, run the command:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo depmod
+</code></pre></div></div>
+
+<p>This will create a list of module dependencies by reading each module and clear the errors on the booting screen.</p>
+
+<center>
+<h1>
+. . .
+</h1>
+</center>
+<p><br /></p>
+
+<p>If you prefer to have a Desktop Environment, you can easily do it by installing XFCE4 and a display manager Lightdm:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>apt install xfce4 lightdm
+</code></pre></div></div>
+
+<p>Now, when you turn on your device, you’ll be greeted with the Lightdm screen and you can login into your device.</p>
+
+<p>I also advise you to install a network manager:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>apt install network-manager-gnome
+</code></pre></div></div>
+
+<p>You’ll notice that the clock time isn’t correct, you need to install NTP:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>apt install ntp
+</code></pre></div></div>
+
+<p>You may also need to configure your timezone and locale:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dpkg-reconfigure tzdata
+apt install locales
+dpkg-reconfigure locales
+</code></pre></div></div>
+
+<p>And that’s it. I think I explained everything. When you’re done, you’ll have a tiny device running Debian 8 with XFCE and internet support.</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/posts/2020-05-16-mk808/debian.png" />
+    </div>
+</div>
+<div class="caption">
+    Neofetch output of the device running Debian Jessie with XFCE.
+</div>
+<p><br /></p>]]></content><author><name></name></author><category term="blog" /><summary type="html"><![CDATA[Here's my journey of installing Debian 8 (Jessie) with XFCE on the MK808 Android Mini TV]]></summary></entry><entry><title type="html">Measuring Your Heart Rate Using Your Phone’s Camera and Flutter</title><link href="https://afonsoraposo.com/blog/2020/ppg" rel="alternate" type="text/html" title="Measuring Your Heart Rate Using Your Phone’s Camera and Flutter" /><published>2020-04-08T00:00:00+00:00</published><updated>2020-04-08T00:00:00+00:00</updated><id>https://afonsoraposo.com/blog/2020/ppg</id><content type="html" xml:base="https://afonsoraposo.com/blog/2020/ppg"><![CDATA[<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/posts/2020-04-08-ppg/header.jpeg" />
+    </div>
+</div>
+<div class="caption">
+    Photo by <a href="https://unsplash.com/@simonmigaj" target="_blank" rel="noopener noreferrer">Simon Migaj</a> on <a href="https://unsplash.com/s/photos/heart" target="_blank" rel="noopener noreferrer">Unsplash</a>
+</div>
+
+<p>In this article, I’ll explain how you can develop a simple app with Flutter that measures heart rate variability and displays it in a chart using only the phone’s camera and flash.</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/posts/2020-04-08-ppg/screenshot1.jpeg" />
+    </div>
+    </div>
+    </div>
+    </div>
+</div>
+<div class="caption">
+Screenshot of the application.
+</div>
+
+<center>
+<h1>
+. . .
+</h1>
+</center>
+
+<h1 id="concept"><strong>Concept</strong></h1>
+
+<p>You’ve probably seen or know of devices that people clip to their fingers in hospitals that measure their heart rate, or smartwatches capable of measuring your heart rate. They all have one thing in common: They measure the heart rate with a technique called photoplethysmography.</p>
+
+<h5 id="a-photoplethysmogram-ppg-is-an-optically-obtained-plethysmogram-that-can-be-used-to-detect-blood-volume-changes-in-the-microvascular-bed-of-tissue--wikipedia"><em>A photoplethysmogram (PPG) is an optically obtained plethysmogram that can be used to detect blood volume changes in the microvascular bed of tissue. — Wikipedia</em></h5>
+
+<p>Shining a light into a blood irrigated tissue, we can measure the variability of reflected light and extract the variation of blood flow. As we all know, the blood flow is dependent on the heart rate, so we can calculate the heart rate using the blood flow variation.</p>
+
+<div class="row mt-3 text-center">
+    <div class="col-sm mt-3 mt-md-0">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/posts/2020-04-08-ppg/ppg.jpeg" />
+    </div>
+</div>
+<div class="caption">
+    Vandenberk, et. al. (2017). Clinical Validation of Heart Rate Apps: Mixed-Methods Evaluation Study. JMIR Mhealth Uhealth. 5. e129. <a href="https://doi.org/10.2196/mhealth.7254" target="_blank" rel="noopener noreferrer">10.2196/mhealth.7254</a>.
+</div>
+
+<p>So, in our application, we’ll shine the camera’s flash and measure the intensity reflected using the phone’s camera. More specifically, we’ll measure the average value of all the pixel’s intensity of the camera image. Then, if we cover the camera and flash with our finger, the intensity measured will vary with the blood flow.</p>
+
+<center>
+<h1>
+. . .
+</h1>
+</center>
+
+<h1 id="code"><strong>Code</strong></h1>
+
+<h3 id="dependencies"><strong>Dependencies</strong></h3>
+
+<p>First, we need to install the dependencies:</p>
+
+<ul>
+  <li><strong>charts_flutter</strong> — Material Design data visualization library written natively in Dart.</li>
+  <li><strong>wakelock</strong> — This Flutter plugin allows you to enable and toggle the screen wakelock on Android and iOS, which prevents the screen from turning off automatically.</li>
+  <li><strong>camera</strong> — A Flutter plugin for iOS and Android allowing access to the device cameras.</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span class="nn">...</span>
+
+<span class="na">dependencies</span><span class="pi">:</span>
+  <span class="na">flutter</span><span class="pi">:</span>
+    <span class="na">sdk</span><span class="pi">:</span> <span class="s">flutter</span>
+  <span class="na">cupertino_icons</span><span class="pi">:</span> <span class="s">^0.1.2</span>
+  <span class="na">charts_flutter</span><span class="pi">:</span> <span class="s">^0.9.0</span>
+  <span class="na">wakelock</span><span class="pi">:</span> <span class="s">^0.1.4+1</span>
+  <span class="na">camera</span><span class="pi">:</span> <span class="s">^0.7.0+4</span>
+  
+<span class="nn">...</span></code></pre></figure>
+
+<h2 id="application"><strong>Application</strong></h2>
+
+<p>Our application’s interface is divided into three files: <code class="language-plaintext highlighter-rouge">main.dart</code>, <code class="language-plaintext highlighter-rouge">homePage.dart</code>, and <code class="language-plaintext highlighter-rouge">chart.dart</code>.</p>
+
+<p><code class="language-plaintext highlighter-rouge">main.dart</code> - Here we only need to set the HomePage widget as our home widget, so it displays when the application runs:</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td><td class="code"><pre><span class="kn">import</span> <span class="s">'package:flutter/material.dart'</span><span class="o">;</span>
+<span class="kn">import</span> <span class="s">'package:flutter/services.dart'</span><span class="o">;</span>
+<span class="kn">import</span> <span class="s">'homePage.dart'</span><span class="o">;</span>
+
+<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span> <span class="o">=</span><span class="p">&gt;</span> <span class="n">runApp</span><span class="p">(</span><span class="n">MyApp</span><span class="p">());</span>
+
+<span class="kd">class</span> <span class="nc">MyApp</span> <span class="kd">extends</span> <span class="n">StatelessWidget</span> <span class="p">{</span>
+  <span class="nd">@override</span>
+  <span class="n">Widget</span> <span class="n">build</span><span class="p">(</span><span class="n">BuildContext</span> <span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">MaterialApp</span><span class="p">(</span>
+      <span class="nl">title:</span> <span class="s">'PPG'</span><span class="p">,</span>
+      <span class="nl">theme:</span> <span class="n">ThemeData</span><span class="p">(</span>
+        <span class="nl">brightness:</span> <span class="n">Brightness</span><span class="o">.</span><span class="na">light</span><span class="p">,</span>
+      <span class="p">),</span>
+      <span class="nl">home:</span> <span class="n">HomePage</span><span class="p">(),</span>
+    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p><code class="language-plaintext highlighter-rouge">HomePage</code> - The core of the application is written on the <code class="language-plaintext highlighter-rouge">homePage.dart</code> file, which is our <code class="language-plaintext highlighter-rouge">HomePage</code> widget.</p>
+
+<p>First, we need to create a <code class="language-plaintext highlighter-rouge">Scaffold</code> and, in its body, insert a centered <code class="language-plaintext highlighter-rouge">IconButton</code>, that will activate or deactivate the camera for the reading process.</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kn">import</span> <span class="s">'package:camera/camera.dart'</span><span class="o">;</span>
+<span class="kn">import</span> <span class="s">'package:flutter/material.dart'</span><span class="o">;</span>
+<span class="kn">import</span> <span class="s">'package:wakelock/wakelock.dart'</span><span class="o">;</span>
+<span class="kn">import</span> <span class="s">'chart.dart'</span><span class="o">;</span>
+
+<span class="kd">class</span> <span class="nc">HomePage</span> <span class="kd">extends</span> <span class="n">StatefulWidget</span> <span class="p">{</span>
+  <span class="nd">@override</span>
+  <span class="n">HomePageView</span> <span class="n">createState</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">HomePageView</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nc">HomePageView</span> <span class="kd">extends</span> <span class="n">State</span><span class="p">&lt;</span><span class="n">HomePage</span><span class="p">&gt;</span> <span class="p">{</span>
+  <span class="kt">bool</span> <span class="n">_toggled</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="nd">@override</span>
+  <span class="n">Widget</span> <span class="n">build</span><span class="p">(</span><span class="n">BuildContext</span> <span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">Scaffold</span><span class="p">(</span>
+      <span class="nl">backgroundColor:</span> <span class="n">Colors</span><span class="o">.</span><span class="na">white</span><span class="p">,</span>
+      <span class="nl">body:</span> <span class="n">SafeArea</span><span class="p">(</span>
+        <span class="nl">child:</span> <span class="n">Center</span><span class="p">(</span>
+          <span class="nl">child:</span> <span class="n">IconButton</span><span class="p">(</span>
+            <span class="nl">icon:</span> <span class="n">Icon</span><span class="p">(</span><span class="n">_toggled</span> <span class="o">?</span> <span class="n">Icons</span><span class="o">.</span><span class="na">favorite</span> <span class="o">:</span> <span class="n">Icons</span><span class="o">.</span><span class="na">favorite_border</span><span class="p">),</span>
+            <span class="nl">color:</span> <span class="n">Colors</span><span class="o">.</span><span class="na">red</span><span class="p">,</span>
+            <span class="nl">iconSize:</span> <span class="mi">128</span><span class="p">,</span>
+            <span class="nl">onPressed:</span> <span class="p">()</span> <span class="p">{</span>
+              <span class="k">if</span> <span class="p">(</span><span class="n">_toggled</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">_untoggle</span><span class="p">();</span>
+              <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="n">_toggle</span><span class="p">();</span>
+              <span class="p">}</span>
+            <span class="p">},</span>
+          <span class="p">),</span>
+        <span class="p">),</span>
+      <span class="p">),</span>
+    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>As one can see, there is a <code class="language-plaintext highlighter-rouge">boolean</code> <code class="language-plaintext highlighter-rouge">_toggled</code> which stores the state of the <code class="language-plaintext highlighter-rouge">IconButton</code>. Now, we only need to define the functions <code class="language-plaintext highlighter-rouge">_toggle</code> and <code class="language-plaintext highlighter-rouge">_untoggle</code>.</p>
+
+<p>For now, these functions will only change the value of the <code class="language-plaintext highlighter-rouge">_toggle</code> variable:</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">_toggle</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+    <span class="n">_toggled</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+
+<span class="n">_untoggle</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+    <span class="n">_toggled</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="p">});</span>
+<span class="p">}</span></code></pre></figure>
+
+<p><br /></p>
+
+<div class="row mt-3 text-center">
+    <div class="col-sm mt-3 mt-md-0">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/posts/2020-04-08-ppg/untoggled.png" />
+    </div>
+    <div class="col-sm mt-3 mt-md-0">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/posts/2020-04-08-ppg/toggled.png" />
+    </div>
+</div>
+<div class="caption">
+Screenshot of the untoggled and toggled iconButton, respectively.
+</div>
+
+<p>The next step, is dividing the screen into three equal parts, using three <code class="language-plaintext highlighter-rouge">Expanded</code> widgets inside a <code class="language-plaintext highlighter-rouge">Column</code>:</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="nd">@override</span>
+<span class="n">Widget</span> <span class="nf">build</span><span class="p">(</span><span class="n">BuildContext</span> <span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">Scaffold</span><span class="p">(</span>
+    <span class="nl">backgroundColor:</span> <span class="n">Colors</span><span class="o">.</span><span class="na">white</span><span class="p">,</span>
+    <span class="nl">body:</span> <span class="n">SafeArea</span><span class="p">(</span>
+      <span class="nl">child:</span> <span class="n">Column</span><span class="p">(</span>
+        <span class="nl">children:</span> <span class="p">&lt;</span><span class="n">Widget</span><span class="p">&gt;[</span>
+          <span class="n">Expanded</span><span class="p">(</span>
+            <span class="nl">child:</span> <span class="n">Container</span><span class="p">(</span>
+              <span class="nl">color:</span> <span class="n">Colors</span><span class="o">.</span><span class="na">red</span><span class="p">,</span>
+            <span class="p">),</span>
+          <span class="p">),</span>
+          <span class="n">Expanded</span><span class="p">(</span>
+            <span class="nl">child:</span> <span class="n">Center</span><span class="p">(</span>
+              <span class="nl">child:</span> <span class="n">IconButton</span><span class="p">(</span>
+                <span class="nl">icon:</span> <span class="n">Icon</span><span class="p">(</span><span class="n">_toggled</span> <span class="o">?</span> <span class="n">Icons</span><span class="o">.</span><span class="na">favorite</span> <span class="o">:</span> <span class="n">Icons</span><span class="o">.</span><span class="na">favorite_border</span><span class="p">),</span>
+                <span class="nl">color:</span> <span class="n">Colors</span><span class="o">.</span><span class="na">red</span><span class="p">,</span>
+                <span class="nl">iconSize:</span> <span class="mi">128</span><span class="p">,</span>
+                <span class="nl">onPressed:</span> <span class="p">()</span> <span class="p">{</span>
+                  <span class="k">if</span> <span class="p">(</span><span class="n">_toggled</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">_untoggle</span><span class="p">();</span>
+                  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                    <span class="n">_toggle</span><span class="p">();</span>
+                  <span class="p">}</span>
+                <span class="p">},</span>
+              <span class="p">),</span>
+            <span class="p">),</span>
+          <span class="p">),</span>
+          <span class="n">Expanded</span><span class="p">(</span>
+            <span class="nl">child:</span> <span class="n">Container</span><span class="p">(</span>
+              <span class="nl">color:</span> <span class="n">Colors</span><span class="o">.</span><span class="na">black</span><span class="p">,</span>
+            <span class="p">),</span>
+          <span class="p">),</span>
+        <span class="p">],</span>
+      <span class="p">),</span>
+    <span class="p">),</span>
+  <span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/posts/2020-04-08-ppg/3-parts.png" />
+    </div>
+    </div>
+    </div>
+    </div>
+</div>
+<div class="caption">
+Screen divided into 3 equal parts.
+</div>
+
+<p>On the bottom <code class="language-plaintext highlighter-rouge">Container</code> we display the real-time chart, where the camera’s data will be displayed. A margin and round corners were also added to this <code class="language-plaintext highlighter-rouge">Container</code>.</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kn">import</span> <span class="s">'package:camera/camera.dart'</span><span class="o">;</span>
+<span class="kn">import</span> <span class="s">'package:flutter/material.dart'</span><span class="o">;</span>
+<span class="kn">import</span> <span class="s">'package:wakelock/wakelock.dart'</span><span class="o">;</span>
+<span class="kn">import</span> <span class="s">'chart.dart'</span><span class="o">;</span>
+
+<span class="kd">class</span> <span class="nc">HomePage</span> <span class="kd">extends</span> <span class="n">StatefulWidget</span> <span class="p">{</span>
+  <span class="nd">@override</span>
+  <span class="n">HomePageView</span> <span class="n">createState</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">HomePageView</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nc">HomePageView</span> <span class="kd">extends</span> <span class="n">State</span><span class="p">&lt;</span><span class="n">HomePage</span><span class="p">&gt;</span> <span class="p">{</span>
+  <span class="kt">bool</span> <span class="n">_toggled</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="kt">List</span><span class="p">&lt;</span><span class="n">SensorValue</span><span class="p">&gt;</span> <span class="n">_data</span> <span class="o">=</span> <span class="p">[];</span>
+
+  <span class="p">...</span>
+
+  <span class="nd">@override</span>
+  <span class="n">Widget</span> <span class="n">build</span><span class="p">(</span><span class="n">BuildContext</span> <span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">Scaffold</span><span class="p">(</span>
+      <span class="nl">backgroundColor:</span> <span class="n">Colors</span><span class="o">.</span><span class="na">white</span><span class="p">,</span>
+      <span class="nl">body:</span> <span class="n">SafeArea</span><span class="p">(</span>
+        <span class="nl">child:</span> <span class="n">Column</span><span class="p">(</span>
+          <span class="nl">children:</span> <span class="p">&lt;</span><span class="n">Widget</span><span class="p">&gt;[</span>
+            <span class="n">Expanded</span><span class="p">(</span>
+              <span class="nl">child:</span> <span class="n">Container</span><span class="p">(</span>
+                <span class="nl">color:</span> <span class="n">Colors</span><span class="o">.</span><span class="na">red</span><span class="p">,</span>
+              <span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">Expanded</span><span class="p">(</span>
+              <span class="nl">child:</span> <span class="n">Center</span><span class="p">(</span>
+                <span class="nl">child:</span> <span class="n">IconButton</span><span class="p">(</span>
+                  <span class="nl">icon:</span> <span class="n">Icon</span><span class="p">(</span><span class="n">_toggled</span> <span class="o">?</span> <span class="n">Icons</span><span class="o">.</span><span class="na">favorite</span> <span class="o">:</span> <span class="n">Icons</span><span class="o">.</span><span class="na">favorite_border</span><span class="p">),</span>
+                  <span class="nl">color:</span> <span class="n">Colors</span><span class="o">.</span><span class="na">red</span><span class="p">,</span>
+                  <span class="nl">iconSize:</span> <span class="mi">128</span><span class="p">,</span>
+                  <span class="nl">onPressed:</span> <span class="p">()</span> <span class="p">{</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">_toggled</span><span class="p">)</span> <span class="p">{</span>
+                      <span class="n">_untoggle</span><span class="p">();</span>
+                    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                      <span class="n">_toggle</span><span class="p">();</span>
+                    <span class="p">}</span>
+                  <span class="p">},</span>
+                <span class="p">),</span>
+              <span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">Expanded</span><span class="p">(</span>
+              <span class="nl">child:</span> <span class="n">Container</span><span class="p">(</span>
+                <span class="nl">margin:</span> <span class="n">EdgeInsets</span><span class="o">.</span><span class="na">all</span><span class="p">(</span><span class="mi">12</span><span class="p">),</span>
+                <span class="nl">decoration:</span> <span class="n">BoxDecoration</span><span class="p">(</span>
+                    <span class="nl">borderRadius:</span> <span class="n">BorderRadius</span><span class="o">.</span><span class="na">all</span><span class="p">(</span>
+                      <span class="n">Radius</span><span class="o">.</span><span class="na">circular</span><span class="p">(</span><span class="mi">18</span><span class="p">),</span>
+                    <span class="p">),</span>
+                    <span class="nl">color:</span> <span class="n">Colors</span><span class="o">.</span><span class="na">black</span><span class="p">),</span>
+                <span class="nl">child:</span> <span class="n">Chart</span><span class="p">(</span><span class="n">_data</span><span class="p">),</span>
+              <span class="p">),</span>
+            <span class="p">),</span>
+          <span class="p">],</span>
+        <span class="p">),</span>
+      <span class="p">),</span>
+    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/posts/2020-04-08-ppg/chart.png" />
+    </div>
+    </div>
+    </div>
+    </div>
+</div>
+<div class="caption">
+Screenshot of the chart container.
+</div>
+
+<p>For the chart widget, we will use the package <code class="language-plaintext highlighter-rouge">charts_flutter</code>. The file <code class="language-plaintext highlighter-rouge">chart.dart</code> contains a <code class="language-plaintext highlighter-rouge">StatelessWidget</code> that displays in a chart points provided in a list. Each point is constituted by a <code class="language-plaintext highlighter-rouge">DateTime</code> value, which indicates the <code class="language-plaintext highlighter-rouge">x</code> value, and a <code class="language-plaintext highlighter-rouge">double</code> value that represents the <code class="language-plaintext highlighter-rouge">y</code> value.</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+</pre></td><td class="code"><pre><span class="kn">import</span> <span class="s">'package:charts_flutter/flutter.dart'</span> <span class="k">as</span> <span class="n">charts</span><span class="o">;</span>
+<span class="kn">import</span> <span class="s">'package:flutter/material.dart'</span><span class="o">;</span>
+
+<span class="kd">class</span> <span class="nc">Chart</span> <span class="kd">extends</span> <span class="n">StatelessWidget</span> <span class="p">{</span>
+  <span class="kd">final</span> <span class="kt">List</span><span class="p">&lt;</span><span class="n">SensorValue</span><span class="p">&gt;</span> <span class="n">_data</span><span class="p">;</span>
+
+  <span class="n">Chart</span><span class="p">(</span><span class="k">this</span><span class="o">.</span><span class="na">_data</span><span class="p">);</span>
+
+  <span class="nd">@override</span>
+  <span class="n">Widget</span> <span class="n">build</span><span class="p">(</span><span class="n">BuildContext</span> <span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="n">charts</span><span class="o">.</span><span class="na">TimeSeriesChart</span><span class="p">([</span>
+      <span class="n">charts</span><span class="o">.</span><span class="na">Series</span><span class="p">&lt;</span><span class="n">SensorValue</span><span class="p">,</span> <span class="n">DateTime</span><span class="p">&gt;(</span>
+        <span class="nl">id:</span> <span class="s">'Values'</span><span class="p">,</span>
+        <span class="nl">colorFn:</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">__</span><span class="p">)</span> <span class="o">=</span><span class="p">&gt;</span> <span class="n">charts</span><span class="o">.</span><span class="na">MaterialPalette</span><span class="o">.</span><span class="na">green</span><span class="o">.</span><span class="na">shadeDefault</span><span class="p">,</span>
+        <span class="nl">domainFn:</span> <span class="p">(</span><span class="n">SensorValue</span> <span class="n">values</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span><span class="p">&gt;</span> <span class="n">values</span><span class="o">.</span><span class="na">time</span><span class="p">,</span>
+        <span class="nl">measureFn:</span> <span class="p">(</span><span class="n">SensorValue</span> <span class="n">values</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span><span class="p">&gt;</span> <span class="n">values</span><span class="o">.</span><span class="na">value</span><span class="p">,</span>
+        <span class="nl">data:</span> <span class="n">_data</span><span class="p">,</span>
+      <span class="p">)</span>
+    <span class="p">],</span>
+        <span class="nl">animate:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="nl">primaryMeasureAxis:</span> <span class="n">charts</span><span class="o">.</span><span class="na">NumericAxisSpec</span><span class="p">(</span>
+          <span class="nl">tickProviderSpec:</span>
+              <span class="n">charts</span><span class="o">.</span><span class="na">BasicNumericTickProviderSpec</span><span class="p">(</span><span class="nl">zeroBound:</span> <span class="kc">false</span><span class="p">),</span>
+          <span class="nl">renderSpec:</span> <span class="n">charts</span><span class="o">.</span><span class="na">NoneRenderSpec</span><span class="p">(),</span>
+        <span class="p">),</span>
+        <span class="nl">domainAxis:</span> <span class="k">new</span> <span class="n">charts</span><span class="o">.</span><span class="na">DateTimeAxisSpec</span><span class="p">(</span>
+            <span class="nl">renderSpec:</span> <span class="k">new</span> <span class="n">charts</span><span class="o">.</span><span class="na">NoneRenderSpec</span><span class="p">()));</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nc">SensorValue</span> <span class="p">{</span>
+  <span class="kd">final</span> <span class="n">DateTime</span> <span class="n">time</span><span class="p">;</span>
+  <span class="kd">final</span> <span class="kt">double</span> <span class="n">value</span><span class="p">;</span>
+
+  <span class="n">SensorValue</span><span class="p">(</span><span class="k">this</span><span class="o">.</span><span class="na">time</span><span class="p">,</span> <span class="k">this</span><span class="o">.</span><span class="na">value</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Regarding the upper <code class="language-plaintext highlighter-rouge">Container</code>, we wish to divide it into two halves. On the left one, will display the <code class="language-plaintext highlighter-rouge">CameraPreview</code> and, on the right half a <code class="language-plaintext highlighter-rouge">Text</code> containing the Beats Per Minute (BPM).</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kd">class</span> <span class="nc">HomePageView</span> <span class="kd">extends</span> <span class="n">State</span><span class="p">&lt;</span><span class="n">HomePage</span><span class="p">&gt;</span> <span class="p">{</span>
+  <span class="kt">bool</span> <span class="n">_toggled</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="kt">List</span><span class="p">&lt;</span><span class="n">SensorValue</span><span class="p">&gt;</span> <span class="n">_data</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="n">CameraController</span> <span class="n">_controller</span><span class="p">;</span>
+
+  <span class="p">...</span>
+
+  <span class="nd">@override</span>
+  <span class="n">Widget</span> <span class="n">build</span><span class="p">(</span><span class="n">BuildContext</span> <span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">Scaffold</span><span class="p">(</span>
+      <span class="nl">backgroundColor:</span> <span class="n">Colors</span><span class="o">.</span><span class="na">white</span><span class="p">,</span>
+      <span class="nl">body:</span> <span class="n">SafeArea</span><span class="p">(</span>
+        <span class="nl">child:</span> <span class="n">Column</span><span class="p">(</span>
+          <span class="nl">children:</span> <span class="p">&lt;</span><span class="n">Widget</span><span class="p">&gt;[</span>
+            <span class="n">Expanded</span><span class="p">(</span>
+              <span class="nl">child:</span> <span class="n">Row</span><span class="p">(</span>
+                <span class="nl">children:</span> <span class="p">&lt;</span><span class="n">Widget</span><span class="p">&gt;[</span>
+                  <span class="n">Expanded</span><span class="p">(</span>
+                    <span class="nl">child:</span> <span class="n">Center</span><span class="p">(</span>
+                      <span class="nl">child:</span> <span class="n">_controller</span> <span class="o">==</span> <span class="kc">null</span>
+                          <span class="o">?</span> <span class="n">Container</span><span class="p">()</span>
+                          <span class="o">:</span> <span class="n">CameraPreview</span><span class="p">(</span><span class="n">_controller</span><span class="p">),</span>
+                    <span class="p">),</span>
+                  <span class="p">),</span>
+                  <span class="n">Expanded</span><span class="p">(</span>
+                    <span class="nl">child:</span> <span class="n">Center</span><span class="p">(</span>
+                      <span class="nl">child:</span> <span class="n">Text</span><span class="p">(</span><span class="s">"BPM"</span><span class="p">),</span>
+                    <span class="p">),</span>
+                  <span class="p">),</span>
+                <span class="p">],</span>
+              <span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">Expanded</span><span class="p">(</span>
+              <span class="nl">child:</span> <span class="n">Center</span><span class="p">(</span>
+                <span class="nl">child:</span> <span class="n">IconButton</span><span class="p">(</span>
+                  <span class="nl">icon:</span> <span class="n">Icon</span><span class="p">(</span><span class="n">_toggled</span> <span class="o">?</span> <span class="n">Icons</span><span class="o">.</span><span class="na">favorite</span> <span class="o">:</span> <span class="n">Icons</span><span class="o">.</span><span class="na">favorite_border</span><span class="p">),</span>
+                  <span class="nl">color:</span> <span class="n">Colors</span><span class="o">.</span><span class="na">red</span><span class="p">,</span>
+                  <span class="nl">iconSize:</span> <span class="mi">128</span><span class="p">,</span>
+                  <span class="nl">onPressed:</span> <span class="p">()</span> <span class="p">{</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">_toggled</span><span class="p">)</span> <span class="p">{</span>
+                      <span class="n">_untoggle</span><span class="p">();</span>
+                    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                      <span class="n">_toggle</span><span class="p">();</span>
+                    <span class="p">}</span>
+                  <span class="p">},</span>
+                <span class="p">),</span>
+              <span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">Expanded</span><span class="p">(</span>
+              <span class="nl">child:</span> <span class="n">Container</span><span class="p">(</span>
+                <span class="nl">margin:</span> <span class="n">EdgeInsets</span><span class="o">.</span><span class="na">all</span><span class="p">(</span><span class="mi">12</span><span class="p">),</span>
+                <span class="nl">decoration:</span> <span class="n">BoxDecoration</span><span class="p">(</span>
+                    <span class="nl">borderRadius:</span> <span class="n">BorderRadius</span><span class="o">.</span><span class="na">all</span><span class="p">(</span>
+                      <span class="n">Radius</span><span class="o">.</span><span class="na">circular</span><span class="p">(</span><span class="mi">18</span><span class="p">),</span>
+                    <span class="p">),</span>
+                    <span class="nl">color:</span> <span class="n">Colors</span><span class="o">.</span><span class="na">black</span><span class="p">),</span>
+                <span class="nl">child:</span> <span class="n">Chart</span><span class="p">(</span><span class="n">_data</span><span class="p">),</span>
+              <span class="p">),</span>
+            <span class="p">),</span>
+          <span class="p">],</span>
+        <span class="p">),</span>
+      <span class="p">),</span>
+    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/posts/2020-04-08-ppg/layout.png" />
+    </div>
+    </div>
+    </div>
+    </div>
+</div>
+
+<p>The <code class="language-plaintext highlighter-rouge">CameraPreview</code> widget requires a valid <code class="language-plaintext highlighter-rouge">CameraController</code>. So we need to initialize the controller once we press the heart button and it’s toggled. Once the button is untoggled, we must also dispose of the controller:</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">Future</span><span class="p">&lt;</span><span class="kt">void</span><span class="p">&gt;</span> <span class="n">_initController</span><span class="p">()</span> <span class="kd">async</span> <span class="p">{</span>
+  <span class="k">try</span> <span class="p">{</span>
+    <span class="kt">List</span> <span class="n">_cameras</span> <span class="o">=</span> <span class="k">await</span> <span class="n">availableCameras</span><span class="p">();</span>
+    <span class="n">_controller</span> <span class="o">=</span> <span class="n">CameraController</span><span class="p">(</span><span class="n">_cameras</span><span class="o">.</span><span class="na">first</span><span class="p">,</span> <span class="n">ResolutionPreset</span><span class="o">.</span><span class="na">low</span><span class="p">);</span>
+    <span class="k">await</span> <span class="n">_controller</span><span class="o">.</span><span class="na">initialize</span><span class="p">();</span>
+  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">Exception</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">print</span><span class="p">(</span><span class="n">Exception</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">_disposeController</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">_controller</span><span class="o">.</span><span class="na">dispose</span><span class="p">();</span>
+  <span class="n">_controller</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Now, we only need to integrate these functions in the functions that toggle the button.</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">_toggle</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">_initController</span><span class="p">()</span><span class="o">.</span><span class="na">then</span><span class="p">((</span><span class="n">onValue</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+      <span class="n">_toggled</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+
+<span class="n">_untoggle</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">_disposeController</span><span class="p">();</span>
+  <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+    <span class="n">_toggled</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="p">});</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>We should also override the dispose method and dispose of the <code class="language-plaintext highlighter-rouge">CameraController</code> once the application is disposed.</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="nd">@override</span>
+<span class="kt">void</span> <span class="nf">dispose</span><span class="p">()</span> <span class="p">{</span> 
+  <span class="n">_disposeController</span><span class="p">();</span>
+  <span class="k">super</span><span class="o">.</span><span class="na">dispose</span><span class="p">();</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>We must not forget to activate the camera’s flash and then start the <code class="language-plaintext highlighter-rouge">ImageStream</code>, which will provide the images that we will process. The function <code class="language-plaintext highlighter-rouge">_scanImage</code> will take care of it.</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">Future</span><span class="p">&lt;</span><span class="kt">void</span><span class="p">&gt;</span> <span class="n">_initController</span><span class="p">()</span> <span class="kd">async</span> <span class="p">{</span>
+  <span class="k">try</span> <span class="p">{</span>
+    <span class="kt">List</span> <span class="n">_cameras</span> <span class="o">=</span> <span class="k">await</span> <span class="n">availableCameras</span><span class="p">();</span>
+    <span class="n">_controller</span> <span class="o">=</span> <span class="n">CameraController</span><span class="p">(</span><span class="n">_cameras</span><span class="o">.</span><span class="na">first</span><span class="p">,</span> <span class="n">ResolutionPreset</span><span class="o">.</span><span class="na">low</span><span class="p">);</span>
+    <span class="k">await</span> <span class="n">_controller</span><span class="o">.</span><span class="na">initialize</span><span class="p">();</span>
+    <span class="n">Future</span><span class="o">.</span><span class="na">delayed</span><span class="p">(</span><span class="n">Duration</span><span class="p">(</span><span class="nl">milliseconds:</span> <span class="mi">100</span><span class="p">))</span><span class="o">.</span><span class="na">then</span><span class="p">((</span><span class="n">onValue</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">_controller</span><span class="o">.</span><span class="na">setFlashMode</span><span class="p">(</span><span class="n">FlashMode</span><span class="o">.</span><span class="na">torch</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="n">_controller</span><span class="o">.</span><span class="na">startImageStream</span><span class="p">((</span><span class="n">CameraImage</span> <span class="n">image</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">_scanImage</span><span class="p">(</span><span class="n">image</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">Exception</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">print</span><span class="p">(</span><span class="n">Exception</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>The function <code class="language-plaintext highlighter-rouge">_scanImage</code> calculates the average of the camera image’s red channel and adds the value to the data list, which is displayed on the chart explained above. Notice that we limit the number of points of the data list to 50 values.</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">_scanImage</span><span class="p">(</span><span class="n">CameraImage</span> <span class="n">image</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">double</span> <span class="n">_avg</span> <span class="o">=</span>
+      <span class="n">image</span><span class="o">.</span><span class="na">planes</span><span class="o">.</span><span class="na">first</span><span class="o">.</span><span class="na">bytes</span><span class="o">.</span><span class="na">reduce</span><span class="p">((</span><span class="n">value</span><span class="p">,</span> <span class="n">element</span><span class="p">)</span> <span class="o">=</span><span class="p">&gt;</span> <span class="n">value</span> <span class="o">+</span> <span class="n">element</span><span class="p">)</span> <span class="o">/</span>
+          <span class="n">image</span><span class="o">.</span><span class="na">planes</span><span class="o">.</span><span class="na">first</span><span class="o">.</span><span class="na">bytes</span><span class="o">.</span><span class="na">length</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">_data</span><span class="o">.</span><span class="na">length</span> <span class="p">&gt;</span><span class="o">=</span> <span class="mi">50</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">_data</span><span class="o">.</span><span class="na">removeAt</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+    <span class="n">_data</span><span class="o">.</span><span class="na">add</span><span class="p">(</span><span class="n">SensorValue</span><span class="p">(</span><span class="n">DateTime</span><span class="o">.</span><span class="na">now</span><span class="p">(),</span> <span class="n">_avg</span><span class="p">));</span>
+  <span class="p">});</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>We do not need to process every frame, therefore, we can select a sampling rate. In this example, a sampling rate of 30 samples/seconds is used. For that purpose, we have a boolean, <code class="language-plaintext highlighter-rouge">_processing</code>, which becomes <code class="language-plaintext highlighter-rouge">true</code> once the <code class="language-plaintext highlighter-rouge">_scanImage</code> function is called and stays that way for 1/30 seconds, then returns to false. The <code class="language-plaintext highlighter-rouge">_scanImage</code> function will only be executed if the boolean _processing is false.</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">Future</span><span class="p">&lt;</span><span class="kt">void</span><span class="p">&gt;</span> <span class="n">_initController</span><span class="p">()</span> <span class="kd">async</span> <span class="p">{</span>
+  <span class="k">try</span> <span class="p">{</span>
+    <span class="kt">List</span> <span class="n">_cameras</span> <span class="o">=</span> <span class="k">await</span> <span class="n">availableCameras</span><span class="p">();</span>
+    <span class="n">_controller</span> <span class="o">=</span> <span class="n">CameraController</span><span class="p">(</span><span class="n">_cameras</span><span class="o">.</span><span class="na">first</span><span class="p">,</span> <span class="n">ResolutionPreset</span><span class="o">.</span><span class="na">low</span><span class="p">);</span>
+    <span class="k">await</span> <span class="n">_controller</span><span class="o">.</span><span class="na">initialize</span><span class="p">();</span>
+    <span class="n">Future</span><span class="o">.</span><span class="na">delayed</span><span class="p">(</span><span class="n">Duration</span><span class="p">(</span><span class="nl">milliseconds:</span> <span class="mi">100</span><span class="p">))</span><span class="o">.</span><span class="na">then</span><span class="p">((</span><span class="n">onValue</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">_controller</span><span class="o">.</span><span class="na">setFlashMode</span><span class="p">(</span><span class="n">FlashMode</span><span class="o">.</span><span class="na">torch</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="n">_controller</span><span class="o">.</span><span class="na">startImageStream</span><span class="p">((</span><span class="n">CameraImage</span> <span class="n">image</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">_processing</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+          <span class="n">_processing</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="p">});</span>
+        <span class="n">_scanImage</span><span class="p">(</span><span class="n">image</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">});</span>
+  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">Exception</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">print</span><span class="p">(</span><span class="n">Exception</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">_scanImage</span><span class="p">(</span><span class="n">CameraImage</span> <span class="n">image</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">double</span> <span class="n">_avg</span> <span class="o">=</span>
+      <span class="n">image</span><span class="o">.</span><span class="na">planes</span><span class="o">.</span><span class="na">first</span><span class="o">.</span><span class="na">bytes</span><span class="o">.</span><span class="na">reduce</span><span class="p">((</span><span class="n">value</span><span class="p">,</span> <span class="n">element</span><span class="p">)</span> <span class="o">=</span><span class="p">&gt;</span> <span class="n">value</span> <span class="o">+</span> <span class="n">element</span><span class="p">)</span> <span class="o">/</span>
+          <span class="n">image</span><span class="o">.</span><span class="na">planes</span><span class="o">.</span><span class="na">first</span><span class="o">.</span><span class="na">bytes</span><span class="o">.</span><span class="na">length</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">_data</span><span class="o">.</span><span class="na">length</span> <span class="p">&gt;</span><span class="o">=</span> <span class="mi">50</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">_data</span><span class="o">.</span><span class="na">removeAt</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+    <span class="n">_data</span><span class="o">.</span><span class="na">add</span><span class="p">(</span><span class="n">SensorValue</span><span class="p">(</span><span class="n">DateTime</span><span class="o">.</span><span class="na">now</span><span class="p">(),</span> <span class="n">_avg</span><span class="p">));</span>
+  <span class="p">});</span>
+  <span class="n">Future</span><span class="o">.</span><span class="na">delayed</span><span class="p">(</span><span class="n">Duration</span><span class="p">(</span><span class="nl">milliseconds:</span> <span class="mi">1000</span> <span class="o">~/</span> <span class="mi">30</span><span class="p">))</span><span class="o">.</span><span class="na">then</span><span class="p">((</span><span class="n">onValue</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+      <span class="n">_processing</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>For good practice, we should also set the <code class="language-plaintext highlighter-rouge">_processing</code> value to false every time we change the heart button’s toggled state.</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">_toggle</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">_initController</span><span class="p">()</span><span class="o">.</span><span class="na">then</span><span class="p">((</span><span class="n">onValue</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+      <span class="n">_toggled</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+      <span class="n">_processing</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+
+<span class="n">_untoggle</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">_disposeController</span><span class="p">();</span>
+  <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+    <span class="n">_toggled</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="n">_processing</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="p">});</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>We now have an application that measures the blood flow volume variability and displays it in a chart. Now we only need to calculate the heart rate, which is the frequency of the plotted signal. I used a simple algorithm that measures the average and the max along our window data, sets the threshold to the mean of those values, and detects the peaks above that threshold. It then updates the BPM value with an attenuation coefficient so we don’t have abrupt changes.</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kd">class</span> <span class="nc">HomePageView</span> <span class="kd">extends</span> <span class="n">State</span><span class="p">&lt;</span><span class="n">HomePage</span><span class="p">&gt;</span> <span class="p">{</span>
+  <span class="p">...</span>
+    
+  <span class="kt">double</span> <span class="n">_alpha</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">;</span>
+
+  <span class="n">_toggle</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">_initController</span><span class="p">()</span><span class="o">.</span><span class="na">then</span><span class="p">((</span><span class="n">onValue</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+        <span class="n">_toggled</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="n">_processing</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+      <span class="p">});</span>
+      <span class="n">_updateBPM</span><span class="p">();</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+  
+  <span class="p">...</span>
+
+  <span class="n">_updateBPM</span><span class="p">()</span> <span class="kd">async</span> <span class="p">{</span>
+    <span class="kt">List</span><span class="p">&lt;</span><span class="n">SensorValue</span><span class="p">&gt;</span> <span class="n">_values</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">_avg</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">_n</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">_m</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">_threshold</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">_bpm</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">_counter</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">_previous</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">_toggled</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">_values</span> <span class="o">=</span> <span class="kt">List</span><span class="o">.</span><span class="na">from</span><span class="p">(</span><span class="n">_data</span><span class="p">);</span>
+      <span class="n">_avg</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">_n</span> <span class="o">=</span> <span class="n">_values</span><span class="o">.</span><span class="na">length</span><span class="p">;</span>
+      <span class="n">_m</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">_values</span><span class="o">.</span><span class="na">forEach</span><span class="p">((</span><span class="n">SensorValue</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">_avg</span> <span class="o">+=</span> <span class="n">value</span><span class="o">.</span><span class="na">value</span> <span class="o">/</span> <span class="n">_n</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="na">value</span> <span class="p">&gt;</span> <span class="n">_m</span><span class="p">)</span> <span class="n">_m</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="na">value</span><span class="p">;</span>
+      <span class="p">});</span>
+      <span class="n">_threshold</span> <span class="o">=</span> <span class="p">(</span><span class="n">_m</span> <span class="o">+</span> <span class="n">_avg</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+      <span class="n">_bpm</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">_counter</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">_previous</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">_n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">_values</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="na">value</span> <span class="p">&lt;</span> <span class="n">_threshold</span> <span class="o">&amp;&amp;</span>
+            <span class="n">_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="na">value</span> <span class="p">&gt;</span> <span class="n">_threshold</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">if</span> <span class="p">(</span><span class="n">_previous</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">_counter</span><span class="o">++</span><span class="p">;</span>
+            <span class="n">_bpm</span> <span class="o">+=</span>
+                <span class="mi">60000</span> <span class="o">/</span> <span class="p">(</span><span class="n">_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="na">time</span><span class="o">.</span><span class="na">millisecondsSinceEpoch</span> <span class="o">-</span> <span class="n">_previous</span><span class="p">);</span>
+          <span class="p">}</span>
+          <span class="n">_previous</span> <span class="o">=</span> <span class="n">_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="na">time</span><span class="o">.</span><span class="na">millisecondsSinceEpoch</span><span class="p">;</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">_counter</span> <span class="p">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">_bpm</span> <span class="o">=</span> <span class="n">_bpm</span> <span class="o">/</span> <span class="n">_counter</span><span class="p">;</span>
+        <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+          <span class="n">_bpm</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">_alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">_bpm</span> <span class="o">+</span> <span class="n">_alpha</span> <span class="o">*</span> <span class="n">_bpm</span><span class="p">;</span>
+        <span class="p">});</span>
+      <span class="p">}</span>
+      <span class="k">await</span> <span class="n">Future</span><span class="o">.</span><span class="na">delayed</span><span class="p">(</span><span class="n">Duration</span><span class="p">(</span><span class="nl">milliseconds:</span> <span class="p">(</span><span class="mi">1000</span> <span class="o">*</span> <span class="mi">50</span> <span class="o">/</span> <span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="na">round</span><span class="p">()));</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="p">...</span>
+    
+<span class="p">}</span></code></pre></figure>
+
+<p>The last thing we need to do is avoid the screen from turning off while the :</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">_toggle</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">_initController</span><span class="p">()</span><span class="o">.</span><span class="na">then</span><span class="p">((</span><span class="n">onValue</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">Wakelock</span><span class="o">.</span><span class="na">enable</span><span class="p">();</span>
+    <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+      <span class="n">_toggled</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+      <span class="n">_processing</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">});</span>
+    <span class="n">_updateBPM</span><span class="p">();</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+
+<span class="n">_untoggle</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">_disposeController</span><span class="p">();</span>
+  <span class="n">Wakelock</span><span class="o">.</span><span class="na">disable</span><span class="p">();</span>
+  <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+    <span class="n">_toggled</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="n">_processing</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="p">});</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>At last, we have an application that measures the blood volume variability and estimates the BPM.</p>
+
+<p>The full code:</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+</pre></td><td class="code"><pre><span class="kn">import</span> <span class="s">'package:camera/camera.dart'</span><span class="o">;</span>
+<span class="kn">import</span> <span class="s">'package:flutter/material.dart'</span><span class="o">;</span>
+<span class="kn">import</span> <span class="s">'package:wakelock/wakelock.dart'</span><span class="o">;</span>
+<span class="kn">import</span> <span class="s">'chart.dart'</span><span class="o">;</span>
+
+<span class="kd">class</span> <span class="nc">HomePage</span> <span class="kd">extends</span> <span class="n">StatefulWidget</span> <span class="p">{</span>
+  <span class="nd">@override</span>
+  <span class="n">HomePageView</span> <span class="n">createState</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">HomePageView</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nc">HomePageView</span> <span class="kd">extends</span> <span class="n">State</span><span class="p">&lt;</span><span class="n">HomePage</span><span class="p">&gt;</span> <span class="p">{</span>
+  <span class="kt">bool</span> <span class="n">_toggled</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="n">_processing</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="kt">List</span><span class="p">&lt;</span><span class="n">SensorValue</span><span class="p">&gt;</span> <span class="n">_data</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="n">CameraController</span> <span class="n">_controller</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">_alpha</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">_bpm</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="n">_toggle</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">_initController</span><span class="p">()</span><span class="o">.</span><span class="na">then</span><span class="p">((</span><span class="n">onValue</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">Wakelock</span><span class="o">.</span><span class="na">enable</span><span class="p">();</span>
+      <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+        <span class="n">_toggled</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="n">_processing</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+      <span class="p">});</span>
+      <span class="n">_updateBPM</span><span class="p">();</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+
+  <span class="n">_untoggle</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">_disposeController</span><span class="p">();</span>
+    <span class="n">Wakelock</span><span class="o">.</span><span class="na">disable</span><span class="p">();</span>
+    <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+      <span class="n">_toggled</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+      <span class="n">_processing</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+
+  <span class="n">Future</span><span class="p">&lt;</span><span class="kt">void</span><span class="p">&gt;</span> <span class="n">_initController</span><span class="p">()</span> <span class="kd">async</span> <span class="p">{</span>
+    <span class="k">try</span> <span class="p">{</span>
+      <span class="kt">List</span> <span class="n">_cameras</span> <span class="o">=</span> <span class="k">await</span> <span class="n">availableCameras</span><span class="p">();</span>
+      <span class="n">_controller</span> <span class="o">=</span> <span class="n">CameraController</span><span class="p">(</span><span class="n">_cameras</span><span class="o">.</span><span class="na">first</span><span class="p">,</span> <span class="n">ResolutionPreset</span><span class="o">.</span><span class="na">low</span><span class="p">);</span>
+      <span class="k">await</span> <span class="n">_controller</span><span class="o">.</span><span class="na">initialize</span><span class="p">();</span>
+      <span class="n">Future</span><span class="o">.</span><span class="na">delayed</span><span class="p">(</span><span class="n">Duration</span><span class="p">(</span><span class="nl">milliseconds:</span> <span class="mi">100</span><span class="p">))</span><span class="o">.</span><span class="na">then</span><span class="p">((</span><span class="n">onValue</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">_controller</span><span class="o">.</span><span class="na">setFlashMode</span><span class="p">(</span><span class="n">FlashMode</span><span class="o">.</span><span class="na">torch</span><span class="p">);</span>
+      <span class="p">});</span>
+      <span class="n">_controller</span><span class="o">.</span><span class="na">startImageStream</span><span class="p">((</span><span class="n">CameraImage</span> <span class="n">image</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">_processing</span><span class="p">)</span> <span class="p">{</span>
+          <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+            <span class="n">_processing</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+          <span class="p">});</span>
+          <span class="n">_scanImage</span><span class="p">(</span><span class="n">image</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">});</span>
+    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">Exception</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">print</span><span class="p">(</span><span class="n">Exception</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="n">_updateBPM</span><span class="p">()</span> <span class="kd">async</span> <span class="p">{</span>
+    <span class="kt">List</span><span class="p">&lt;</span><span class="n">SensorValue</span><span class="p">&gt;</span> <span class="n">_values</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">_avg</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">_n</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">_m</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">_threshold</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">_bpm</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">_counter</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">_previous</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">_toggled</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">_values</span> <span class="o">=</span> <span class="kt">List</span><span class="o">.</span><span class="na">from</span><span class="p">(</span><span class="n">_data</span><span class="p">);</span>
+      <span class="n">_avg</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">_n</span> <span class="o">=</span> <span class="n">_values</span><span class="o">.</span><span class="na">length</span><span class="p">;</span>
+      <span class="n">_m</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">_values</span><span class="o">.</span><span class="na">forEach</span><span class="p">((</span><span class="n">SensorValue</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">_avg</span> <span class="o">+=</span> <span class="n">value</span><span class="o">.</span><span class="na">value</span> <span class="o">/</span> <span class="n">_n</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="na">value</span> <span class="p">&gt;</span> <span class="n">_m</span><span class="p">)</span> <span class="n">_m</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="na">value</span><span class="p">;</span>
+      <span class="p">});</span>
+      <span class="n">_threshold</span> <span class="o">=</span> <span class="p">(</span><span class="n">_m</span> <span class="o">+</span> <span class="n">_avg</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+      <span class="n">_bpm</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">_counter</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">_previous</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">_n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">_values</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="na">value</span> <span class="p">&lt;</span> <span class="n">_threshold</span> <span class="o">&amp;&amp;</span>
+            <span class="n">_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="na">value</span> <span class="p">&gt;</span> <span class="n">_threshold</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">if</span> <span class="p">(</span><span class="n">_previous</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">_counter</span><span class="o">++</span><span class="p">;</span>
+            <span class="n">_bpm</span> <span class="o">+=</span>
+                <span class="mi">60000</span> <span class="o">/</span> <span class="p">(</span><span class="n">_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="na">time</span><span class="o">.</span><span class="na">millisecondsSinceEpoch</span> <span class="o">-</span> <span class="n">_previous</span><span class="p">);</span>
+          <span class="p">}</span>
+          <span class="n">_previous</span> <span class="o">=</span> <span class="n">_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="na">time</span><span class="o">.</span><span class="na">millisecondsSinceEpoch</span><span class="p">;</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">_counter</span> <span class="p">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">_bpm</span> <span class="o">=</span> <span class="n">_bpm</span> <span class="o">/</span> <span class="n">_counter</span><span class="p">;</span>
+        <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+          <span class="n">_bpm</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">_alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">_bpm</span> <span class="o">+</span> <span class="n">_alpha</span> <span class="o">*</span> <span class="n">_bpm</span><span class="p">;</span>
+        <span class="p">});</span>
+      <span class="p">}</span>
+      <span class="k">await</span> <span class="n">Future</span><span class="o">.</span><span class="na">delayed</span><span class="p">(</span><span class="n">Duration</span><span class="p">(</span><span class="nl">milliseconds:</span> <span class="p">(</span><span class="mi">1000</span> <span class="o">*</span> <span class="mi">50</span> <span class="o">/</span> <span class="mi">30</span><span class="p">)</span><span class="o">.</span><span class="na">round</span><span class="p">()));</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="n">_scanImage</span><span class="p">(</span><span class="n">CameraImage</span> <span class="n">image</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">double</span> <span class="n">_avg</span> <span class="o">=</span>
+        <span class="n">image</span><span class="o">.</span><span class="na">planes</span><span class="o">.</span><span class="na">first</span><span class="o">.</span><span class="na">bytes</span><span class="o">.</span><span class="na">reduce</span><span class="p">((</span><span class="n">value</span><span class="p">,</span> <span class="n">element</span><span class="p">)</span> <span class="o">=</span><span class="p">&gt;</span> <span class="n">value</span> <span class="o">+</span> <span class="n">element</span><span class="p">)</span> <span class="o">/</span>
+            <span class="n">image</span><span class="o">.</span><span class="na">planes</span><span class="o">.</span><span class="na">first</span><span class="o">.</span><span class="na">bytes</span><span class="o">.</span><span class="na">length</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">_data</span><span class="o">.</span><span class="na">length</span> <span class="p">&gt;</span><span class="o">=</span> <span class="mi">50</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">_data</span><span class="o">.</span><span class="na">removeAt</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+      <span class="n">_data</span><span class="o">.</span><span class="na">add</span><span class="p">(</span><span class="n">SensorValue</span><span class="p">(</span><span class="n">DateTime</span><span class="o">.</span><span class="na">now</span><span class="p">(),</span> <span class="n">_avg</span><span class="p">));</span>
+    <span class="p">});</span>
+    <span class="n">Future</span><span class="o">.</span><span class="na">delayed</span><span class="p">(</span><span class="n">Duration</span><span class="p">(</span><span class="nl">milliseconds:</span> <span class="mi">1000</span> <span class="o">~/</span> <span class="mi">30</span><span class="p">))</span><span class="o">.</span><span class="na">then</span><span class="p">((</span><span class="n">onValue</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+        <span class="n">_processing</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+      <span class="p">});</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+
+  <span class="n">_disposeController</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">_controller</span><span class="o">.</span><span class="na">dispose</span><span class="p">();</span>
+    <span class="n">_controller</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="nd">@override</span>
+  <span class="kt">void</span> <span class="n">dispose</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">_disposeController</span><span class="p">();</span>
+    <span class="k">super</span><span class="o">.</span><span class="na">dispose</span><span class="p">();</span>
+  <span class="p">}</span>
+
+  <span class="nd">@override</span>
+  <span class="n">Widget</span> <span class="n">build</span><span class="p">(</span><span class="n">BuildContext</span> <span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">Scaffold</span><span class="p">(</span>
+      <span class="nl">backgroundColor:</span> <span class="n">Colors</span><span class="o">.</span><span class="na">white</span><span class="p">,</span>
+      <span class="nl">body:</span> <span class="n">SafeArea</span><span class="p">(</span>
+        <span class="nl">child:</span> <span class="n">Column</span><span class="p">(</span>
+          <span class="nl">children:</span> <span class="p">&lt;</span><span class="n">Widget</span><span class="p">&gt;[</span>
+            <span class="n">Expanded</span><span class="p">(</span>
+              <span class="nl">child:</span> <span class="n">Row</span><span class="p">(</span>
+                <span class="nl">children:</span> <span class="p">&lt;</span><span class="n">Widget</span><span class="p">&gt;[</span>
+                  <span class="n">Expanded</span><span class="p">(</span>
+                    <span class="nl">child:</span> <span class="n">Center</span><span class="p">(</span>
+                      <span class="nl">child:</span> <span class="n">_controller</span> <span class="o">==</span> <span class="kc">null</span>
+                          <span class="o">?</span> <span class="n">Container</span><span class="p">()</span>
+                          <span class="o">:</span> <span class="n">CameraPreview</span><span class="p">(</span><span class="n">_controller</span><span class="p">),</span>
+                    <span class="p">),</span>
+                  <span class="p">),</span>
+                  <span class="n">Expanded</span><span class="p">(</span>
+                    <span class="nl">child:</span> <span class="n">Center</span><span class="p">(</span>
+                      <span class="nl">child:</span> <span class="n">Text</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">_bpm</span> <span class="p">&gt;</span> <span class="mi">30</span> <span class="o">&amp;&amp;</span> <span class="n">_bpm</span> <span class="p">&lt;</span> <span class="mi">150</span> <span class="o">?</span> <span class="n">_bpm</span><span class="o">.</span><span class="na">round</span><span class="p">()</span><span class="o">.</span><span class="na">toString</span><span class="p">()</span> <span class="o">:</span> <span class="s">"--"</span><span class="p">),</span>
+                        <span class="nl">style:</span> <span class="n">TextStyle</span><span class="p">(</span><span class="nl">fontSize:</span> <span class="mi">32</span><span class="p">,</span> <span class="nl">fontWeight:</span> <span class="n">FontWeight</span><span class="o">.</span><span class="na">bold</span><span class="p">),</span>
+                      <span class="p">),</span>
+                    <span class="p">),</span>
+                  <span class="p">),</span>
+                <span class="p">],</span>
+              <span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">Expanded</span><span class="p">(</span>
+              <span class="nl">child:</span> <span class="n">Center</span><span class="p">(</span>
+                <span class="nl">child:</span> <span class="n">IconButton</span><span class="p">(</span>
+                  <span class="nl">icon:</span> <span class="n">Icon</span><span class="p">(</span><span class="n">_toggled</span> <span class="o">?</span> <span class="n">Icons</span><span class="o">.</span><span class="na">favorite</span> <span class="o">:</span> <span class="n">Icons</span><span class="o">.</span><span class="na">favorite_border</span><span class="p">),</span>
+                  <span class="nl">color:</span> <span class="n">Colors</span><span class="o">.</span><span class="na">red</span><span class="p">,</span>
+                  <span class="nl">iconSize:</span> <span class="mi">128</span><span class="p">,</span>
+                  <span class="nl">onPressed:</span> <span class="p">()</span> <span class="p">{</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">_toggled</span><span class="p">)</span> <span class="p">{</span>
+                      <span class="n">_untoggle</span><span class="p">();</span>
+                    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                      <span class="n">_toggle</span><span class="p">();</span>
+                    <span class="p">}</span>
+                  <span class="p">},</span>
+                <span class="p">),</span>
+              <span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">Expanded</span><span class="p">(</span>
+              <span class="nl">child:</span> <span class="n">Container</span><span class="p">(</span>
+                <span class="nl">margin:</span> <span class="n">EdgeInsets</span><span class="o">.</span><span class="na">all</span><span class="p">(</span><span class="mi">12</span><span class="p">),</span>
+                <span class="nl">decoration:</span> <span class="n">BoxDecoration</span><span class="p">(</span>
+                    <span class="nl">borderRadius:</span> <span class="n">BorderRadius</span><span class="o">.</span><span class="na">all</span><span class="p">(</span>
+                      <span class="n">Radius</span><span class="o">.</span><span class="na">circular</span><span class="p">(</span><span class="mi">18</span><span class="p">),</span>
+                    <span class="p">),</span>
+                    <span class="nl">color:</span> <span class="n">Colors</span><span class="o">.</span><span class="na">black</span><span class="p">),</span>
+                <span class="nl">child:</span> <span class="n">Chart</span><span class="p">(</span><span class="n">_data</span><span class="p">),</span>
+              <span class="p">),</span>
+            <span class="p">),</span>
+          <span class="p">],</span>
+        <span class="p">),</span>
+      <span class="p">),</span>
+    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Here’s the working application:</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/posts/2020-04-08-ppg/app.gif" />
+    </div>
+    </div>
+    </div>
+    </div>
+</div>
+<div class="caption">
+Application measuring the variation of blood flow on the index finger.
+</div>
+
+<p>The GitHub repository for this project can be found <a href="https://github.com/Afonsocraposo/ppg">here</a></p>
+
+<p><strong>On my GitHub repository, you’ll notice that I updated the application to using a <code class="language-plaintext highlighter-rouge">Timer.periodic</code>, which presented better results. I also added more customization and an animation the heart-shaped button that simulates a beating heart. I didn’t include it in this tutorial since its not necessary.</strong>
+<br /></p>]]></content><author><name></name></author><category term="blog" /><summary type="html"><![CDATA[Build a mobile heart-rate monitor that works without the need to wear any devices]]></summary></entry><entry><title type="html">Flutter: How to Save Objects in SharedPreferences</title><link href="https://afonsoraposo.com/blog/2019/sharedPref" rel="alternate" type="text/html" title="Flutter: How to Save Objects in SharedPreferences" /><published>2019-09-07T00:00:00+00:00</published><updated>2019-09-07T00:00:00+00:00</updated><id>https://afonsoraposo.com/blog/2019/sharedPref</id><content type="html" xml:base="https://afonsoraposo.com/blog/2019/sharedPref"><![CDATA[<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/posts/2019-09-07-sharedPref/header.jpeg" />
+    </div>
+</div>
+<p><br /></p>
+
+<p>While developing a mobile application, you may want to save a custom object for later use, for example, saving a user’s info when the application is closed and using it when the app is opened later.</p>
+
+<p>To do so, we’ll encode our object into a JSON string and save it in the <code class="language-plaintext highlighter-rouge">SharedPreferences</code> space. When we want to read the saved data, we only have to decode from a JSON string back to our object. Saving data in <code class="language-plaintext highlighter-rouge">SharedPreferences</code> is an easy solution when you want to save small amounts of data.</p>
+
+<center>
+<h1>
+. . .
+</h1>
+</center>
+
+<h1 id="create-a-custom-object"><strong>Create a Custom Object</strong></h1>
+
+<p>For our example, we’ll use a very simple object to store some user information.</p>
+
+<p>Our object will have three attributes: name, age, and location; each one represented by a string.</p>
+
+<p>Our class is really simple. In our example, it’s initiated as an object with null attributes and each one is assigned later.</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kd">class</span> <span class="nc">User</span> <span class="p">{</span>
+  <span class="kt">String</span> <span class="n">name</span><span class="p">;</span>
+  <span class="kt">String</span> <span class="n">age</span><span class="p">;</span>
+  <span class="kt">String</span> <span class="n">location</span><span class="p">;</span>
+
+  <span class="n">User</span><span class="p">();</span>
+
+  <span class="p">...</span>
+  
+<span class="p">};</span></code></pre></figure>
+
+<center>
+<h1>
+. . .
+</h1>
+</center>
+
+<h1 id="json-encode-and-decode"><strong>JSON: Encode and Decode</strong></h1>
+
+<p>To encode our user object into JSON, we must create a function inside the class that will do this conversion. It will create a map where each attribute (value) corresponds to a key:</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kt">Map</span><span class="p">&lt;</span><span class="kt">String</span><span class="p">,</span> <span class="kd">dynamic</span><span class="p">&gt;</span> <span class="n">toJson</span><span class="p">()</span> <span class="o">=</span><span class="p">&gt;</span> <span class="p">{</span>
+  <span class="s">'name'</span><span class="o">:</span> <span class="n">name</span><span class="p">,</span>
+  <span class="s">'age'</span><span class="o">:</span> <span class="n">age</span><span class="p">,</span>
+  <span class="s">'location'</span><span class="o">:</span> <span class="n">location</span><span class="p">,</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>This will convert our user object into a <code class="language-plaintext highlighter-rouge">Map&lt;String, dynamic&gt;</code>. To convert it to a JSON string, late we’ll later have to use the function <code class="language-plaintext highlighter-rouge">json.encode(Map&lt;String, dynamic&gt;)</code>. This will convert our user object to a JSON string like:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{"name":"Alfonso","age":"21","location":"Portugal"}
+</code></pre></div></div>
+
+<p>This string will be saved in the <code class="language-plaintext highlighter-rouge">SharedPreferences</code>.
+<br /></p>
+
+<p>To decode from a JSON string to a user object, we must first use the function <code class="language-plaintext highlighter-rouge">json.decode(JSON-String)</code>. This will return a <code class="language-plaintext highlighter-rouge">Map&lt;String, dynamic&gt;</code> which we can then convert into our user object:</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">User</span><span class="o">.</span><span class="na">fromJson</span><span class="p">(</span><span class="kt">Map</span><span class="p">&lt;</span><span class="kt">String</span><span class="p">,</span> <span class="kd">dynamic</span><span class="p">&gt;</span> <span class="n">json</span><span class="p">)</span>
+    <span class="o">:</span> <span class="n">name</span> <span class="o">=</span> <span class="n">json</span><span class="p">[</span><span class="s">'name'</span><span class="p">],</span>
+      <span class="n">age</span> <span class="o">=</span> <span class="n">json</span><span class="p">[</span><span class="s">'age'</span><span class="p">],</span>
+      <span class="n">location</span> <span class="o">=</span> <span class="n">json</span><span class="p">[</span><span class="s">'location'</span><span class="p">];</span></code></pre></figure>
+
+<p>Therefore, the final code for our user class will be:</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td><td class="code"><pre><span class="kd">class</span> <span class="nc">User</span> <span class="p">{</span>
+  <span class="kt">String</span> <span class="n">name</span><span class="p">;</span>
+  <span class="kt">String</span> <span class="n">age</span><span class="p">;</span>
+  <span class="kt">String</span> <span class="n">location</span><span class="p">;</span>
+
+  <span class="n">User</span><span class="p">();</span>
+
+  <span class="n">User</span><span class="o">.</span><span class="na">fromJson</span><span class="p">(</span><span class="kt">Map</span><span class="p">&lt;</span><span class="kt">String</span><span class="p">,</span> <span class="kd">dynamic</span><span class="p">&gt;</span> <span class="n">json</span><span class="p">)</span>
+      <span class="o">:</span> <span class="n">name</span> <span class="o">=</span> <span class="n">json</span><span class="p">[</span><span class="s">'name'</span><span class="p">],</span>
+        <span class="n">age</span> <span class="o">=</span> <span class="n">json</span><span class="p">[</span><span class="s">'age'</span><span class="p">],</span>
+        <span class="n">location</span> <span class="o">=</span> <span class="n">json</span><span class="p">[</span><span class="s">'location'</span><span class="p">];</span>
+
+  <span class="kt">Map</span><span class="p">&lt;</span><span class="kt">String</span><span class="p">,</span> <span class="kd">dynamic</span><span class="p">&gt;</span> <span class="n">toJson</span><span class="p">()</span> <span class="o">=</span><span class="p">&gt;</span> <span class="p">{</span>
+        <span class="s">'name'</span><span class="o">:</span> <span class="n">name</span><span class="p">,</span>
+        <span class="s">'age'</span><span class="o">:</span> <span class="n">age</span><span class="p">,</span>
+        <span class="s">'location'</span><span class="o">:</span> <span class="n">location</span><span class="p">,</span>
+      <span class="p">};</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<center>
+<h1>
+. . .
+</h1>
+</center>
+
+<h1 id="sharedpreferences-save-and-read"><strong>SharedPreferences: Save and Read</strong></h1>
+
+<p>First, in order to use the <code class="language-plaintext highlighter-rouge">SharedPreferences</code>, we have to use Flutter’s plugin for it. To do so, make sure <code class="language-plaintext highlighter-rouge">dependencies</code> in your <code class="language-plaintext highlighter-rouge">pubspec.yaml</code> file looks similar to this:</p>
+
+<figure class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span class="na">dependencies</span><span class="pi">:</span>
+  <span class="s">...</span>
+  <span class="s">shared_preferences</span><span class="err">:</span> <span class="s">any</span></code></pre></figure>
+
+<p>To save (write) something in <code class="language-plaintext highlighter-rouge">SharedPreferences</code>, we must provide a value that we want to save and a key that identifies it.</p>
+
+<p>In our case, the value will be a string—the key is always a string.</p>
+
+<p>The first thing we have to do is <code class="language-plaintext highlighter-rouge">getInstance</code> of the <code class="language-plaintext highlighter-rouge">SharedPreferences</code>:</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kd">final</span> <span class="n">prefs</span> <span class="o">=</span> <span class="k">await</span> <span class="n">SharedPreferences</span><span class="o">.</span><span class="na">getInstance</span><span class="p">();</span></code></pre></figure>
+
+<p>Here, the code await will hold the program’s execution until we have the <code class="language-plaintext highlighter-rouge">SharedPreferences</code> instance. If you don’t understand asynchronous programming very well, you can read more about it in the Dart documentation.</p>
+
+<p>After having the <code class="language-plaintext highlighter-rouge">SharedPreferences</code> instance, we’ll want to save the string value with a given key:</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">prefs</span><span class="o">.</span><span class="na">setString</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span></code></pre></figure>
+
+<p>Remember that the value we want to save is a custom object, therefore, we need to encode it into a JSON string, as explained above. The code then becomes:</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">prefs</span><span class="o">.</span><span class="na">setString</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="na">encode</span><span class="p">(</span><span class="n">value</span><span class="p">));</span></code></pre></figure>
+
+<p>Our <code class="language-plaintext highlighter-rouge">write</code> method will be:</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kd">static</span> <span class="nf">write</span><span class="p">(</span><span class="kt">String</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="kd">async</span> <span class="p">{</span>
+  <span class="kd">final</span> <span class="n">prefs</span> <span class="o">=</span> <span class="k">await</span> <span class="n">SharedPreferences</span><span class="o">.</span><span class="na">getInstance</span><span class="p">();</span>
+  <span class="k">return</span> <span class="k">await</span> <span class="n">prefs</span><span class="o">.</span><span class="na">setString</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="na">encode</span><span class="p">(</span><span class="n">value</span><span class="p">));</span>
+<span class="p">}</span></code></pre></figure>
+
+<div class="caption">
+    Give special attention to the fact that the function is "async".
+</div>
+
+<p>The <code class="language-plaintext highlighter-rouge">read</code> method is similar to the <code class="language-plaintext highlighter-rouge">write</code> one and its code is the following:</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kd">static</span> <span class="nf">read</span><span class="p">(</span><span class="kt">String</span> <span class="n">key</span><span class="p">)</span> <span class="kd">async</span> <span class="p">{</span>
+  <span class="kd">final</span> <span class="n">SharedPreferences</span> <span class="n">prefs</span> <span class="o">=</span> <span class="k">await</span> <span class="n">SharedPreferences</span><span class="o">.</span><span class="na">getInstance</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="na">containsKey</span><span class="p">(</span><span class="n">key</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="na">decode</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="na">getString</span><span class="p">(</span><span class="n">key</span><span class="p">));</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<div class="caption">
+    Here we must check if the key exists and then decode the stored String (JSON string).
+</div>
+
+<p>Prior, we should have organized every function used to manage the <code class="language-plaintext highlighter-rouge">SharedPreferences</code> in a class called <code class="language-plaintext highlighter-rouge">SharedPref</code>. The code is:</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+</pre></td><td class="code"><pre><span class="kn">import</span> <span class="s">'package:shared_preferences/shared_preferences.dart'</span><span class="o">;</span>
+<span class="kn">import</span> <span class="s">'dart:convert'</span><span class="o">;</span>
+
+<span class="kd">class</span> <span class="nc">SharedPref</span> <span class="p">{</span>
+  <span class="kd">static</span> <span class="n">read</span><span class="p">(</span><span class="kt">String</span> <span class="n">key</span><span class="p">)</span> <span class="kd">async</span> <span class="p">{</span>
+    <span class="kd">final</span> <span class="n">SharedPreferences</span> <span class="n">prefs</span> <span class="o">=</span> <span class="k">await</span> <span class="n">SharedPreferences</span><span class="o">.</span><span class="na">getInstance</span><span class="p">();</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="na">containsKey</span><span class="p">(</span><span class="n">key</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="na">decode</span><span class="p">(</span><span class="n">prefs</span><span class="o">.</span><span class="na">getString</span><span class="p">(</span><span class="n">key</span><span class="p">));</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="kd">static</span> <span class="n">write</span><span class="p">(</span><span class="kt">String</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="kd">async</span> <span class="p">{</span>
+    <span class="kd">final</span> <span class="n">prefs</span> <span class="o">=</span> <span class="k">await</span> <span class="n">SharedPreferences</span><span class="o">.</span><span class="na">getInstance</span><span class="p">();</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">prefs</span><span class="o">.</span><span class="na">setString</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="na">encode</span><span class="p">(</span><span class="n">value</span><span class="p">));</span>
+  <span class="p">}</span>
+
+  <span class="kd">static</span> <span class="n">remove</span><span class="p">(</span><span class="kt">String</span> <span class="n">key</span><span class="p">)</span> <span class="kd">async</span> <span class="p">{</span>
+    <span class="kd">final</span> <span class="n">prefs</span> <span class="o">=</span> <span class="k">await</span> <span class="n">SharedPreferences</span><span class="o">.</span><span class="na">getInstance</span><span class="p">();</span>
+    <span class="n">prefs</span><span class="o">.</span><span class="na">remove</span><span class="p">(</span><span class="n">key</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="kd">static</span> <span class="n">clear</span><span class="p">()</span> <span class="kd">async</span> <span class="p">{</span>
+    <span class="kd">final</span> <span class="n">prefs</span> <span class="o">=</span> <span class="k">await</span> <span class="n">SharedPreferences</span><span class="o">.</span><span class="na">getInstance</span><span class="p">();</span>
+    <span class="n">prefs</span><span class="o">.</span><span class="na">clear</span><span class="p">();</span>
+  <span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<div class="caption">
+    Also added the "remove" and "clear" methods.
+</div>
+
+<center>
+<h1>
+. . .
+</h1>
+</center>
+
+<h1 id="demo-use-it-in-an-app"><strong>Demo: Use it in an App</strong></h1>
+
+<p>Since the <code class="language-plaintext highlighter-rouge">SharedPref</code> methods are static, we can save a user object to our <code class="language-plaintext highlighter-rouge">SharedPreferences</code> very simply:</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">SharedPref</span><span class="o">.</span><span class="na">save</span><span class="p">(</span><span class="s">"user"</span><span class="p">,</span> <span class="n">userSave</span><span class="p">);</span></code></pre></figure>
+
+<p>The tricky part of using this method for saving objects in a real app is retrieving the object itself, and not a <code class="language-plaintext highlighter-rouge">Future&lt;Dynamic&gt;</code>. The trick is having an asynchronous function in our app that will retrieve our object and update the application’s state when it’s ready.</p>
+
+<p>The function will look something like:</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">loadSharedPrefs</span><span class="p">()</span> <span class="kd">async</span> <span class="p">{</span>
+  <span class="k">try</span> <span class="p">{</span>
+    <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="na">fromJson</span><span class="p">(</span><span class="k">await</span> <span class="n">SharedPref</span><span class="o">.</span><span class="na">read</span><span class="p">(</span><span class="s">"user"</span><span class="p">));</span>
+    <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+      <span class="n">userLoad</span> <span class="o">=</span> <span class="n">user</span><span class="p">;</span>
+    <span class="p">});</span>
+  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">Excepetion</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// do something</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>As before, the <code class="language-plaintext highlighter-rouge">await</code> will make sure that the function’s execution is on hold until we retrieved the value corresponding to the key “user” from the <code class="language-plaintext highlighter-rouge">SharedPreferences</code>. After it, we create a user object from the retrieved JSON string and update our application’s <code class="language-plaintext highlighter-rouge">State</code>.</p>
+
+<p>I created a simple demo application to showcase all the above. Here is a gif of the app in action:</p>
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+    <div class="col-sm mt-3 pt-md-0 pl-xl-5 pr-xl-5">
+        <img class="img-fluid rounded z-depth-1" src="/assets/img/posts/2019-09-07-sharedPref/application.gif" />
+    </div>
+    </div>
+    </div>
+    </div>
+
+</div>
+<p><br /></p>
+
+<p>And here is the code:</p>
+
+<figure class="highlight"><pre><code class="language-dart" data-lang="dart"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+</pre></td><td class="code"><pre><span class="kn">import</span> <span class="s">'package:flutter/material.dart'</span><span class="o">;</span>
+<span class="kn">import</span> <span class="s">'SharedPref.dart'</span><span class="o">;</span>
+<span class="kn">import</span> <span class="s">'user.dart'</span><span class="o">;</span>
+
+<span class="kd">class</span> <span class="nc">Demo</span> <span class="kd">extends</span> <span class="n">StatefulWidget</span> <span class="p">{</span>
+  <span class="nd">@override</span>
+  <span class="n">DemoView</span> <span class="n">createState</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">DemoView</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nc">DemoView</span> <span class="kd">extends</span> <span class="n">State</span><span class="p">&lt;</span><span class="n">Demo</span><span class="p">&gt;</span> <span class="p">{</span>
+  <span class="n">SharedPref</span> <span class="n">sharedPref</span> <span class="o">=</span> <span class="n">SharedPref</span><span class="p">();</span>
+  <span class="n">User</span> <span class="n">userSave</span> <span class="o">=</span> <span class="n">User</span><span class="p">();</span>
+  <span class="n">User</span> <span class="n">userLoad</span> <span class="o">=</span> <span class="n">User</span><span class="p">();</span>
+
+  <span class="n">loadSharedPrefs</span><span class="p">()</span> <span class="kd">async</span> <span class="p">{</span>
+    <span class="k">try</span> <span class="p">{</span>
+      <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="na">fromJson</span><span class="p">(</span><span class="k">await</span> <span class="n">SharedPref</span><span class="o">.</span><span class="na">read</span><span class="p">(</span><span class="s">"user"</span><span class="p">));</span>
+      <span class="n">Scaffold</span><span class="o">.</span><span class="na">of</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="o">.</span><span class="na">showSnackBar</span><span class="p">(</span><span class="n">SnackBar</span><span class="p">(</span>
+          <span class="nl">content:</span> <span class="k">new</span> <span class="n">Text</span><span class="p">(</span><span class="s">"Loaded!"</span><span class="p">),</span>
+          <span class="nl">duration:</span> <span class="kd">const</span> <span class="n">Duration</span><span class="p">(</span><span class="nl">milliseconds:</span> <span class="mi">500</span><span class="p">)));</span>
+      <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+        <span class="n">userLoad</span> <span class="o">=</span> <span class="n">user</span><span class="p">;</span>
+      <span class="p">});</span>
+    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">Excepetion</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">Scaffold</span><span class="o">.</span><span class="na">of</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="o">.</span><span class="na">showSnackBar</span><span class="p">(</span><span class="n">SnackBar</span><span class="p">(</span>
+          <span class="nl">content:</span> <span class="k">new</span> <span class="n">Text</span><span class="p">(</span><span class="s">"Nothing found!"</span><span class="p">),</span>
+          <span class="nl">duration:</span> <span class="kd">const</span> <span class="n">Duration</span><span class="p">(</span><span class="nl">milliseconds:</span> <span class="mi">500</span><span class="p">)));</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="nd">@override</span>
+  <span class="n">Widget</span> <span class="n">build</span><span class="p">(</span><span class="n">BuildContext</span> <span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">ListView</span><span class="p">(</span>
+      <span class="nl">children:</span> <span class="p">&lt;</span><span class="n">Widget</span><span class="p">&gt;[</span>
+        <span class="n">Container</span><span class="p">(</span>
+          <span class="nl">height:</span> <span class="mf">200.0</span><span class="p">,</span>
+          <span class="nl">child:</span> <span class="n">Column</span><span class="p">(</span>
+            <span class="nl">mainAxisAlignment:</span> <span class="n">MainAxisAlignment</span><span class="o">.</span><span class="na">spaceEvenly</span><span class="p">,</span>
+            <span class="nl">children:</span> <span class="p">&lt;</span><span class="n">Widget</span><span class="p">&gt;[</span>
+              <span class="n">Container</span><span class="p">(</span>
+                  <span class="nl">height:</span> <span class="mf">50.0</span><span class="p">,</span>
+                  <span class="nl">width:</span> <span class="mf">300.0</span><span class="p">,</span>
+                  <span class="nl">child:</span> <span class="n">TextField</span><span class="p">(</span>
+                    <span class="nl">decoration:</span> <span class="n">InputDecoration</span><span class="p">(</span><span class="nl">hintText:</span> <span class="s">"Name"</span><span class="p">),</span>
+                    <span class="nl">onChanged:</span> <span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+                      <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+                        <span class="n">userSave</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+                      <span class="p">});</span>
+                    <span class="p">},</span>
+                  <span class="p">)),</span>
+              <span class="n">Container</span><span class="p">(</span>
+                  <span class="nl">height:</span> <span class="mf">50.0</span><span class="p">,</span>
+                  <span class="nl">width:</span> <span class="mf">300.0</span><span class="p">,</span>
+                  <span class="nl">child:</span> <span class="n">TextField</span><span class="p">(</span>
+                    <span class="nl">decoration:</span> <span class="n">InputDecoration</span><span class="p">(</span><span class="nl">hintText:</span> <span class="s">"Age"</span><span class="p">),</span>
+                    <span class="nl">onChanged:</span> <span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+                      <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+                        <span class="n">userSave</span><span class="o">.</span><span class="na">age</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+                      <span class="p">});</span>
+                    <span class="p">},</span>
+                  <span class="p">)),</span>
+              <span class="n">Container</span><span class="p">(</span>
+                  <span class="nl">height:</span> <span class="mf">50.0</span><span class="p">,</span>
+                  <span class="nl">width:</span> <span class="mf">300.0</span><span class="p">,</span>
+                  <span class="nl">child:</span> <span class="n">TextField</span><span class="p">(</span>
+                    <span class="nl">decoration:</span> <span class="n">InputDecoration</span><span class="p">(</span><span class="nl">hintText:</span> <span class="s">"Location"</span><span class="p">),</span>
+                    <span class="nl">onChanged:</span> <span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+                      <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+                        <span class="n">userSave</span><span class="o">.</span><span class="na">location</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+                      <span class="p">});</span>
+                    <span class="p">},</span>
+                  <span class="p">)),</span>
+            <span class="p">],</span>
+          <span class="p">),</span>
+        <span class="p">),</span>
+        <span class="n">Container</span><span class="p">(</span>
+          <span class="nl">height:</span> <span class="mf">80.0</span><span class="p">,</span>
+          <span class="nl">child:</span> <span class="n">Row</span><span class="p">(</span>
+            <span class="nl">mainAxisAlignment:</span> <span class="n">MainAxisAlignment</span><span class="o">.</span><span class="na">spaceEvenly</span><span class="p">,</span>
+            <span class="nl">children:</span> <span class="p">&lt;</span><span class="n">Widget</span><span class="p">&gt;[</span>
+              <span class="n">RaisedButton</span><span class="p">(</span>
+                <span class="nl">onPressed:</span> <span class="p">()</span> <span class="p">{</span>
+                  <span class="n">SharedPref</span><span class="o">.</span><span class="na">save</span><span class="p">(</span><span class="s">"user"</span><span class="p">,</span> <span class="n">userSave</span><span class="p">);</span>
+                  <span class="n">Scaffold</span><span class="o">.</span><span class="na">of</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="o">.</span><span class="na">showSnackBar</span><span class="p">(</span><span class="n">SnackBar</span><span class="p">(</span>
+                      <span class="nl">content:</span> <span class="k">new</span> <span class="n">Text</span><span class="p">(</span><span class="s">"Saved!"</span><span class="p">),</span>
+                      <span class="nl">duration:</span> <span class="kd">const</span> <span class="n">Duration</span><span class="p">(</span><span class="nl">milliseconds:</span> <span class="mi">500</span><span class="p">)));</span>
+                <span class="p">},</span>
+                <span class="nl">child:</span> <span class="n">Text</span><span class="p">(</span><span class="s">'Save'</span><span class="p">,</span> <span class="nl">style:</span> <span class="n">TextStyle</span><span class="p">(</span><span class="nl">fontSize:</span> <span class="mi">20</span><span class="p">)),</span>
+              <span class="p">),</span>
+              <span class="n">RaisedButton</span><span class="p">(</span>
+                <span class="nl">onPressed:</span> <span class="p">()</span> <span class="p">{</span>
+                  <span class="n">loadSharedPrefs</span><span class="p">();</span>
+                <span class="p">},</span>
+                <span class="nl">child:</span> <span class="n">Text</span><span class="p">(</span><span class="s">'Load'</span><span class="p">,</span> <span class="nl">style:</span> <span class="n">TextStyle</span><span class="p">(</span><span class="nl">fontSize:</span> <span class="mi">20</span><span class="p">)),</span>
+              <span class="p">),</span>
+              <span class="n">RaisedButton</span><span class="p">(</span>
+                <span class="nl">onPressed:</span> <span class="p">()</span> <span class="p">{</span>
+                  <span class="n">SharedPref</span><span class="o">.</span><span class="na">remove</span><span class="p">(</span><span class="s">"user"</span><span class="p">);</span>
+                  <span class="n">Scaffold</span><span class="o">.</span><span class="na">of</span><span class="p">(</span><span class="n">context</span><span class="p">)</span><span class="o">.</span><span class="na">showSnackBar</span><span class="p">(</span><span class="n">SnackBar</span><span class="p">(</span>
+                      <span class="nl">content:</span> <span class="k">new</span> <span class="n">Text</span><span class="p">(</span><span class="s">"Cleared!"</span><span class="p">),</span>
+                      <span class="nl">duration:</span> <span class="kd">const</span> <span class="n">Duration</span><span class="p">(</span><span class="nl">milliseconds:</span> <span class="mi">500</span><span class="p">)));</span>
+                  <span class="n">setState</span><span class="p">(()</span> <span class="p">{</span>
+                    <span class="n">userLoad</span> <span class="o">=</span> <span class="n">User</span><span class="p">();</span>
+                  <span class="p">});</span>
+                <span class="p">},</span>
+                <span class="nl">child:</span> <span class="n">Text</span><span class="p">(</span><span class="s">'Clear'</span><span class="p">,</span> <span class="nl">style:</span> <span class="n">TextStyle</span><span class="p">(</span><span class="nl">fontSize:</span> <span class="mi">20</span><span class="p">)),</span>
+              <span class="p">),</span>
+            <span class="p">],</span>
+          <span class="p">),</span>
+        <span class="p">),</span>
+        <span class="n">SizedBox</span><span class="p">(</span>
+          <span class="nl">height:</span> <span class="mf">300.0</span><span class="p">,</span>
+          <span class="nl">child:</span> <span class="n">Column</span><span class="p">(</span>
+            <span class="nl">crossAxisAlignment:</span> <span class="n">CrossAxisAlignment</span><span class="o">.</span><span class="na">center</span><span class="p">,</span>
+            <span class="nl">mainAxisAlignment:</span> <span class="n">MainAxisAlignment</span><span class="o">.</span><span class="na">spaceEvenly</span><span class="p">,</span>
+            <span class="nl">children:</span> <span class="p">&lt;</span><span class="n">Widget</span><span class="p">&gt;[</span>
+              <span class="n">Text</span><span class="p">(</span><span class="s">"Name: "</span> <span class="o">+</span> <span class="p">(</span><span class="n">userLoad</span><span class="o">.</span><span class="na">name</span> <span class="o">??</span> <span class="s">""</span><span class="p">),</span>
+                  <span class="nl">style:</span> <span class="n">TextStyle</span><span class="p">(</span><span class="nl">fontSize:</span> <span class="mi">16</span><span class="p">)),</span>
+              <span class="n">Text</span><span class="p">(</span><span class="s">"Age: "</span> <span class="o">+</span> <span class="p">(</span><span class="n">userLoad</span><span class="o">.</span><span class="na">age</span> <span class="o">??</span> <span class="s">""</span><span class="p">),</span>
+                  <span class="nl">style:</span> <span class="n">TextStyle</span><span class="p">(</span><span class="nl">fontSize:</span> <span class="mi">16</span><span class="p">)),</span>
+              <span class="n">Text</span><span class="p">(</span><span class="s">"Location: "</span> <span class="o">+</span> <span class="p">(</span><span class="n">userLoad</span><span class="o">.</span><span class="na">location</span> <span class="o">??</span> <span class="s">""</span><span class="p">),</span>
+                  <span class="nl">style:</span> <span class="n">TextStyle</span><span class="p">(</span><span class="nl">fontSize:</span> <span class="mi">16</span><span class="p">)),</span>
+            <span class="p">],</span>
+          <span class="p">),</span>
+        <span class="p">),</span>
+      <span class="p">],</span>
+    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></figure>]]></content><author><name></name></author><category term="blog" /><summary type="html"><![CDATA[An easy solution for small amounts of data]]></summary></entry></feed>
